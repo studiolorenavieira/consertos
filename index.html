@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consertos · Lorena Vieira</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0e0c0b;
+      --surface: #161412;
+      --surface2: #1e1b18;
+      --surface3: #252119;
+      --border: #2e2924;
+      --border2: #3a342d;
+      --accent: #c9a96e;
+      --accent2: #e8c99a;
+      --accent-dim: rgba(201,169,110,0.12);
+      --accent-glow: rgba(201,169,110,0.06);
+      --text: #f0ebe4;
+      --text2: #a89880;
+      --text3: #6b5f52;
+      --danger: #c96e6e;
+      --danger-dim: rgba(201,110,110,0.12);
+      --success: #6ec98a;
+      --success-dim: rgba(110,201,138,0.12);
+      --warn: #c9b06e;
+      --warn-dim: rgba(201,176,110,0.12);
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header-brand h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 18px;
+      color: var(--accent2);
+      letter-spacing: 0.02em;
+    }
+    .header-brand span {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+    .header-sep { width: 1px; height: 20px; background: var(--border); }
+
+    /* ── NAV TABS ── */
+    .nav {
+      display: flex;
+      gap: 4px;
+      background: var(--surface);
+      padding: 0 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-tab {
+      padding: 12px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text3);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+      letter-spacing: 0.03em;
+    }
+    .nav-tab:hover { color: var(--text2); }
+    .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* ── LAYOUT ── */
+    .main { padding: 28px 32px; max-width: 1280px; margin: 0 auto; }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 22px;
+      color: var(--text);
+    }
+    .section-subtitle {
+      font-size: 12px;
+      color: var(--text3);
+      margin-top: 2px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* ── BOTÕES ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      font-family: 'DM Sans', sans-serif;
+      letter-spacing: 0.02em;
+    }
+    .btn-primary { background: var(--accent); color: #1a1207; }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+    .btn-danger { background: var(--danger-dim); color: var(--danger); border: 1px solid transparent; }
+    .btn-danger:hover { border-color: var(--danger); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    /* ── STATS ROW ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+    }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-family: 'DM Serif Display', serif;
+      font-size: 28px;
+      color: var(--accent2);
+      line-height: 1;
+    }
+    .stat-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+    /* ── TABELA ── */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    table { width: 100%; border-collapse: collapse; }
+    thead { background: var(--surface2); }
+    th {
+      padding: 11px 16px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 13px 16px;
+      font-size: 13px;
+      color: var(--text2);
+      border-bottom: 1px solid var(--border);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+    td strong { color: var(--text); font-weight: 500; }
+
+    /* ── BADGES ── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .badge-aberta { background: var(--accent-dim); color: var(--accent); }
+    .badge-retornada { background: var(--warn-dim); color: var(--warn); }
+    .badge-paga { background: var(--success-dim); color: var(--success); }
+    .badge-cancelada { background: rgba(80,70,60,0.3); color: var(--text3); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-lg);
+      width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+      transform: translateY(16px);
+      transition: transform 0.2s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 20px;
+      color: var(--text);
+      margin-bottom: 20px;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── FORM ── */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-full { grid-column: 1 / -1; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+    .form-input, .form-select, .form-textarea {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      font-size: 13px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent);
+      background: var(--surface3);
+    }
+    .form-select option { background: var(--surface2); }
+    .form-textarea { resize: vertical; min-height: 72px; }
+
+    /* ── FILTROS ── */
+    .filters-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filter-input {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 8px 14px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+    }
+    .filter-input:focus { border-color: var(--accent); }
+    .filter-input::placeholder { color: var(--text3); }
+
+    /* ── LOADING / EMPTY ── */
+    .loading-row td { text-align: center; padding: 40px; color: var(--text3); }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text3);
+    }
+    .empty-state h3 { font-size: 16px; color: var(--text2); margin-bottom: 6px; }
+
+    /* ── TOAST ── */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 500;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: var(--text);
+      animation: slideIn 0.2s ease;
+      min-width: 260px;
+    }
+    .toast.error { border-left-color: var(--danger); }
+    .toast.success { border-left-color: var(--success); }
+    @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    /* ── PAGAMENTO CHECKLIST ── */
+    .pagamento-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .pagamento-item:hover { border-color: var(--border2); }
+    .pagamento-item.selected { border-color: var(--accent); background: var(--accent-dim); }
+    .pagamento-item input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; }
+    .pagamento-item-info { flex: 1; }
+    .pagamento-item-nome { font-weight: 500; color: var(--text); font-size: 13px; }
+    .pagamento-item-det { font-size: 12px; color: var(--text3); margin-top: 2px; }
+    .pagamento-item-val { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--accent); }
+
+    /* ── RELATORIO ── */
+    .relatorio-header {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      align-items: flex-end;
+    }
+    .relatorio-total-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .main { padding: 16px; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .header { padding: 0 16px; }
+      .nav { padding: 0 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-brand">
+    <h1>Lorena Vieira</h1>
+    <div class="header-sep"></div>
+    <span>Consertos</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-tab active" onclick="showPage('ordens')">Ordens</div>
+  <div class="nav-tab" onclick="showPage('pagamentos')">Pagamentos</div>
+  <div class="nav-tab" onclick="showPage('relatorios')">Relatórios</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ═══════════════════ ORDENS ═══════════════════ -->
+  <div class="page active" id="page-ordens">
+    <div class="stats-row" id="stats-ordens">
+      <div class="stat-card">
+        <div class="stat-label">Em Aberto</div>
+        <div class="stat-value" id="stat-abertas">—</div>
+        <div class="stat-sub">ordens ativas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Retornadas</div>
+        <div class="stat-value" id="stat-retornadas">—</div>
+        <div class="stat-sub">aguard. pagamento</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">A Receber</div>
+        <div class="stat-value" id="stat-receber">—</div>
+        <div class="stat-sub">valor pendente</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Recebido (mês)</div>
+        <div class="stat-value" id="stat-recebido">—</div>
+        <div class="stat-sub">pagamentos no mês</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div>
+        <div class="section-title">Ordens de Conserto</div>
+        <div class="section-subtitle">Controle de entradas e saídas</div>
+      </div>
+      <button class="btn btn-primary" onclick="abrirModalNovaOrdem()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nova Ordem
+      </button>
+    </div>
+
+    <div class="filters-bar">
+      <input class="filter-input" type="text" placeholder="Buscar cliente..." id="filtro-cliente" oninput="filtrarOrdens()" style="width:200px" />
+      <select class="filter-input" id="filtro-status" onchange="filtrarOrdens()">
+        <option value="">Todos os status</option>
+        <option value="aberta">Abertas</option>
+        <option value="retornada">Retornadas</option>
+        <option value="paga">Pagas</option>
+        <option value="cancelada">Canceladas</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Tipo de Conserto</th>
+            <th>Entrada</th>
+            <th>Retorno Prev.</th>
+            <th>Valor</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-ordens">
+          <tr class="loading-row"><td colspan="8">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ PAGAMENTOS ═══════════════════ -->
+  <div class="page" id="page-pagamentos">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Pagamentos</div>
+        <div class="section-subtitle">Selecione as ordens retornadas para registrar pagamento</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px">
+      <div style="font-size:13px; color:var(--text3); margin-bottom:16px; font-weight:500; letter-spacing:0.05em; text-transform:uppercase; font-size:11px;">
+        Ordens Retornadas · Pendentes de Pagamento
+      </div>
+      <div id="lista-pagamentos-pendentes">
+        <div class="empty-state"><h3>Carregando...</h3></div>
+      </div>
+      <div id="pagamento-footer" style="display:none; margin-top:16px; padding-top:16px; border-top:1px solid var(--border)">
+        <div style="display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap">
+          <div class="form-group">
+            <label class="form-label">Data do Pagamento</label>
+            <input type="date" class="form-input" id="pag-data" style="width:170px" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Forma de Pagamento</label>
+            <select class="form-select" id="pag-forma" style="width:170px">
+              <option value="dinheiro">Dinheiro</option>
+              <option value="pix">PIX</option>
+              <option value="cartao_debito">Cartão Débito</option>
+              <option value="cartao_credito">Cartão Crédito</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Observações</label>
+            <input type="text" class="form-input" id="pag-obs" placeholder="Opcional" style="width:200px" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px">
+            <div style="font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em;">Total Selecionado</div>
+            <div style="font-family:'DM Serif Display',serif; font-size:26px; color:var(--accent)" id="pag-total">R$ 0,00</div>
+          </div>
+          <button class="btn btn-primary" onclick="registrarPagamento()">Registrar Pagamento</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:24px">
+      <div>
+        <div class="section-title">Histórico de Pagamentos</div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Tipo</th>
+            <th>Data Pag.</th>
+            <th>Forma</th>
+            <th>Valor Pago</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-historico-pag">
+          <tr class="loading-row"><td colspan="6">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ RELATÓRIOS ═══════════════════ -->
+  <div class="page" id="page-relatorios">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Relatórios</div>
+        <div class="section-subtitle">Análise de desempenho</div>
+      </div>
+    </div>
+
+    <div class="relatorio-header">
+      <div class="form-group">
+        <label class="form-label">Período Inicial</label>
+        <input type="date" class="form-input" id="rel-inicio" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Período Final</label>
+        <input type="date" class="form-input" id="rel-fim" />
+      </div>
+      <button class="btn btn-primary" onclick="gerarRelatorio()">Gerar Relatório</button>
+      <button class="btn btn-ghost" onclick="mesAtual()">Mês Atual</button>
+    </div>
+
+    <div id="relatorio-resultado" style="display:none">
+      <div class="stats-row" style="grid-template-columns: repeat(3,1fr)">
+        <div class="stat-card">
+          <div class="stat-label">Total de Ordens</div>
+          <div class="stat-value" id="rel-total-ordens">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Faturamento Bruto</div>
+          <div class="stat-value" id="rel-faturamento">—</div>
+          <div class="stat-sub">ordens no período</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Recebido no Período</div>
+          <div class="stat-value" id="rel-recebido">—</div>
+          <div class="stat-sub">pagamentos registrados</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div style="font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:16px; font-weight:600">Por Tipo de Conserto</div>
+        <table style="width:100%">
+          <thead>
+            <tr>
+              <th style="background:transparent; padding:8px 12px">Tipo</th>
+              <th style="background:transparent; padding:8px 12px">Qtd</th>
+              <th style="background:transparent; padding:8px 12px">Valor Total</th>
+              <th style="background:transparent; padding:8px 12px">Ticket Médio</th>
+            </tr>
+          </thead>
+          <tbody id="rel-por-tipo"></tbody>
+        </table>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div style="font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:16px; font-weight:600">Por Status</div>
+        <table style="width:100%">
+          <thead>
+            <tr>
+              <th style="background:transparent; padding:8px 12px">Status</th>
+              <th style="background:transparent; padding:8px 12px">Qtd</th>
+              <th style="background:transparent; padding:8px 12px">Valor</th>
+            </tr>
+          </thead>
+          <tbody id="rel-por-status"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ MODAL: NOVA ORDEM ═══════ -->
+<div class="modal-overlay" id="modal-ordem">
+  <div class="modal">
+    <div class="modal-title" id="modal-ordem-titulo">Nova Ordem de Conserto</div>
+    <input type="hidden" id="ordem-edit-id" />
+    <div class="form-grid">
+      <div class="form-group form-full">
+        <label class="form-label">Nome da Cliente *</label>
+        <input type="text" class="form-input" id="f-cliente" placeholder="Ex: Maria da Silva" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefone</label>
+        <input type="text" class="form-input" id="f-telefone" placeholder="(62) 9xxxx-xxxx" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo de Conserto *</label>
+        <select class="form-select" id="f-tipo">
+          <option value="">Selecione...</option>
+        </select>
+      </div>
+      <div class="form-group form-full">
+        <label class="form-label">Descrição / Detalhes</label>
+        <textarea class="form-textarea" id="f-descricao" placeholder="Descreva o conserto necessário..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Valor (R$) *</label>
+        <input type="number" class="form-input" id="f-valor" placeholder="0,00" step="0.01" min="0" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Data de Entrada *</label>
+        <input type="date" class="form-input" id="f-entrada" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Retorno Previsto *</label>
+        <input type="date" class="form-input" id="f-retorno" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Observações</label>
+        <input type="text" class="form-input" id="f-obs" placeholder="Opcional" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-ordem')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarOrdem()">Salvar Ordem</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ MODAL: REGISTRAR RETORNO ═══════ -->
+<div class="modal-overlay" id="modal-retorno">
+  <div class="modal" style="width:400px">
+    <div class="modal-title">Registrar Retorno</div>
+    <input type="hidden" id="retorno-ordem-id" />
+    <p style="color:var(--text3); font-size:13px; margin-bottom:18px">
+      Confirma que o item <strong id="retorno-cliente-nome" style="color:var(--text)"></strong> foi recebido e está pronto para entrega?
+    </p>
+    <div class="form-group">
+      <label class="form-label">Observações do Retorno</label>
+      <textarea class="form-textarea" id="retorno-obs" placeholder="Ex: Conserto concluído, aguardando cliente..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-retorno')">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarRetorno()">Confirmar Retorno</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toasts"></div>
+
+<script>
+const SUPABASE_URL = 'https://lrtphrdqyeoblbwwnujv.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxydHBocmRxeWVvYmxid3dudWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDc3MDUsImV4cCI6MjA5MTEyMzcwNX0.0UbgGWrllHXWrK3AW8o4lG-OsHX8vWxI-N9PmGdjjnk';
+
+const H = { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=representation' };
+
+async function sb(path, opts = {}) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { headers: H, ...opts });
+  if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.message || r.status); }
+  if (r.status === 204) return null;
+  return r.json();
+}
+
+// Estado
+let todasOrdens = [];
+let tiposConserto = [];
+let ordensSelecionadas = new Set();
+
+// ═══ INIT ═══
+document.addEventListener('DOMContentLoaded', () => {
+  const hoje = new Date().toISOString().split('T')[0];
+  document.getElementById('f-entrada').value = hoje;
+  document.getElementById('pag-data').value = hoje;
+  carregarTipos();
+  carregarOrdens();
+  // Relatorio: mês atual por padrão
+  const ini = new Date(); ini.setDate(1);
+  const fim = new Date(ini.getFullYear(), ini.getMonth() + 1, 0);
+  document.getElementById('rel-inicio').value = ini.toISOString().split('T')[0];
+  document.getElementById('rel-fim').value = fim.toISOString().split('T')[0];
+});
+
+// ═══ TOAST ═══
+function toast(msg, tipo = '') {
+  const t = document.getElementById('toasts');
+  const d = document.createElement('div');
+  d.className = `toast ${tipo}`;
+  d.textContent = msg;
+  t.appendChild(d);
+  setTimeout(() => d.remove(), 3500);
+}
+
+// ═══ NAVIGATE ═══
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
+  document.getElementById(`page-${p}`).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (p === 'pagamentos') carregarPagamentosPage();
+  if (p === 'relatorios') {}
+}
+
+// ═══ TIPOS ═══
+async function carregarTipos() {
+  try {
+    tiposConserto = await sb('consertos_tipos?select=*&ativo=eq.true&order=nome');
+    const sel = document.getElementById('f-tipo');
+    tiposConserto.forEach(t => {
+      const o = document.createElement('option');
+      o.value = t.nome; o.textContent = t.nome;
+      sel.appendChild(o);
+    });
+  } catch(e) { console.error(e); }
+}
+
+// ═══ ORDENS ═══
+async function carregarOrdens() {
+  try {
+    todasOrdens = await sb('consertos_ordens?select=*&order=created_at.desc');
+    renderOrdens(todasOrdens);
+    calcularStats(todasOrdens);
+  } catch(e) {
+    toast('Erro ao carregar ordens: ' + e.message, 'error');
+    document.getElementById('tbody-ordens').innerHTML = `<tr class="loading-row"><td colspan="8">Erro ao conectar. Verifique a rede.</td></tr>`;
+  }
+}
+
+function calcularStats(ordens) {
+  const abertas = ordens.filter(o => o.status === 'aberta').length;
+  const retornadas = ordens.filter(o => o.status === 'retornada').length;
+  const aReceber = ordens.filter(o => ['aberta','retornada'].includes(o.status)).reduce((s,o) => s + Number(o.valor), 0);
+  // recebido no mês
+  carregarRecebidoMes().then(v => {
+    document.getElementById('stat-recebido').textContent = fmtMoeda(v);
+  });
+  document.getElementById('stat-abertas').textContent = abertas;
+  document.getElementById('stat-retornadas').textContent = retornadas;
+  document.getElementById('stat-receber').textContent = fmtMoeda(aReceber);
+}
+
+async function carregarRecebidoMes() {
+  const ini = new Date(); ini.setDate(1);
+  const fim = new Date(ini.getFullYear(), ini.getMonth()+1, 0);
+  try {
+    const r = await sb(`consertos_pagamentos?select=valor_pago&data_pagamento=gte.${ini.toISOString().split('T')[0]}&data_pagamento=lte.${fim.toISOString().split('T')[0]}`);
+    return r.reduce((s,p) => s + Number(p.valor_pago), 0);
+  } catch { return 0; }
+}
+
+function renderOrdens(lista) {
+  const tb = document.getElementById('tbody-ordens');
+  if (!lista.length) {
+    tb.innerHTML = `<tr><td colspan="8"><div class="empty-state"><h3>Nenhuma ordem encontrada</h3><p>Clique em "Nova Ordem" para começar.</p></div></td></tr>`;
+    return;
+  }
+  tb.innerHTML = lista.map(o => {
+    const atrasada = o.status === 'aberta' && o.data_retorno_previsto < new Date().toISOString().split('T')[0];
+    return `<tr>
+      <td style="color:var(--text3); font-size:12px">#${o.numero_ordem || '—'}</td>
+      <td><strong>${o.nome_cliente}</strong>${o.telefone ? `<div style="font-size:11px;color:var(--text3)">${o.telefone}</div>` : ''}</td>
+      <td>${o.tipo_conserto}</td>
+      <td>${fmtData(o.data_entrada)}</td>
+      <td style="${atrasada ? 'color:var(--danger)' : ''}">${fmtData(o.data_retorno_previsto)}${atrasada ? ' ⚠' : ''}</td>
+      <td style="font-family:'DM Serif Display',serif; color:var(--accent)">${fmtMoeda(o.valor)}</td>
+      <td>${badgeStatus(o.status)}</td>
+      <td>
+        <div style="display:flex;gap:6px">
+          ${o.status === 'aberta' ? `<button class="btn btn-ghost btn-sm" onclick="abrirRetorno('${o.id}','${escHtml(o.nome_cliente)}')">Retorno</button>` : ''}
+          <button class="btn btn-ghost btn-sm" onclick="editarOrdem('${o.id}')">Editar</button>
+          ${o.status !== 'paga' ? `<button class="btn btn-danger btn-sm" onclick="cancelarOrdem('${o.id}')">✕</button>` : ''}
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarOrdens() {
+  const q = document.getElementById('filtro-cliente').value.toLowerCase();
+  const s = document.getElementById('filtro-status').value;
+  const f = todasOrdens.filter(o =>
+    (!q || o.nome_cliente.toLowerCase().includes(q)) &&
+    (!s || o.status === s)
+  );
+  renderOrdens(f);
+}
+
+// ═══ MODAL ORDEM ═══
+function abrirModalNovaOrdem() {
+  document.getElementById('modal-ordem-titulo').textContent = 'Nova Ordem de Conserto';
+  document.getElementById('ordem-edit-id').value = '';
+  ['f-cliente','f-telefone','f-descricao','f-obs'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-tipo').value = '';
+  document.getElementById('f-valor').value = '';
+  const hoje = new Date().toISOString().split('T')[0];
+  document.getElementById('f-entrada').value = hoje;
+  // Retorno padrão: 7 dias
+  const ret = new Date(); ret.setDate(ret.getDate() + 7);
+  document.getElementById('f-retorno').value = ret.toISOString().split('T')[0];
+  abrirModal('modal-ordem');
+}
+
+function editarOrdem(id) {
+  const o = todasOrdens.find(x => x.id === id);
+  if (!o) return;
+  document.getElementById('modal-ordem-titulo').textContent = 'Editar Ordem';
+  document.getElementById('ordem-edit-id').value = id;
+  document.getElementById('f-cliente').value = o.nome_cliente;
+  document.getElementById('f-telefone').value = o.telefone || '';
+  document.getElementById('f-tipo').value = o.tipo_conserto;
+  document.getElementById('f-descricao').value = o.descricao || '';
+  document.getElementById('f-valor').value = o.valor;
+  document.getElementById('f-entrada').value = o.data_entrada;
+  document.getElementById('f-retorno').value = o.data_retorno_previsto;
+  document.getElementById('f-obs').value = o.observacoes || '';
+  abrirModal('modal-ordem');
+}
+
+async function salvarOrdem() {
+  const cliente = document.getElementById('f-cliente').value.trim();
+  const tipo = document.getElementById('f-tipo').value;
+  const valor = parseFloat(document.getElementById('f-valor').value);
+  const entrada = document.getElementById('f-entrada').value;
+  const retorno = document.getElementById('f-retorno').value;
+  if (!cliente || !tipo || !entrada || !retorno || isNaN(valor)) {
+    toast('Preencha todos os campos obrigatórios.', 'error'); return;
+  }
+  const payload = {
+    nome_cliente: cliente,
+    telefone: document.getElementById('f-telefone').value.trim() || null,
+    tipo_conserto: tipo,
+    descricao: document.getElementById('f-descricao').value.trim() || null,
+    valor,
+    data_entrada: entrada,
+    data_retorno_previsto: retorno,
+    observacoes: document.getElementById('f-obs').value.trim() || null,
+    updated_at: new Date().toISOString()
+  };
+  const editId = document.getElementById('ordem-edit-id').value;
+  try {
+    if (editId) {
+      await sb(`consertos_ordens?id=eq.${editId}`, { method: 'PATCH', body: JSON.stringify(payload) });
+      toast('Ordem atualizada.', 'success');
+    } else {
+      await sb('consertos_ordens', { method: 'POST', body: JSON.stringify(payload) });
+      toast('Ordem criada com sucesso!', 'success');
+    }
+    fecharModal('modal-ordem');
+    carregarOrdens();
+  } catch(e) { toast('Erro ao salvar: ' + e.message, 'error'); }
+}
+
+// ═══ RETORNO ═══
+function abrirRetorno(id, nome) {
+  document.getElementById('retorno-ordem-id').value = id;
+  document.getElementById('retorno-cliente-nome').textContent = nome;
+  document.getElementById('retorno-obs').value = '';
+  abrirModal('modal-retorno');
+}
+
+async function confirmarRetorno() {
+  const id = document.getElementById('retorno-ordem-id').value;
+  const obs = document.getElementById('retorno-obs').value.trim();
+  try {
+    const payload = { status: 'retornada', updated_at: new Date().toISOString() };
+    if (obs) payload.observacoes = obs;
+    await sb(`consertos_ordens?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+    toast('Retorno registrado! Pronto para pagamento.', 'success');
+    fecharModal('modal-retorno');
+    carregarOrdens();
+  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+}
+
+// ═══ CANCELAR ═══
+async function cancelarOrdem(id) {
+  if (!confirm('Cancelar esta ordem?')) return;
+  try {
+    await sb(`consertos_ordens?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'cancelada', updated_at: new Date().toISOString() }) });
+    toast('Ordem cancelada.', '');
+    carregarOrdens();
+  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+}
+
+// ═══ PAGAMENTOS PAGE ═══
+async function carregarPagamentosPage() {
+  try {
+    const pendentes = todasOrdens.filter(o => o.status === 'retornada');
+    const lista = document.getElementById('lista-pagamentos-pendentes');
+    if (!pendentes.length) {
+      lista.innerHTML = `<div class="empty-state"><h3>Nenhuma ordem retornada pendente</h3><p>Registre o retorno nas ordens abertas primeiro.</p></div>`;
+      document.getElementById('pagamento-footer').style.display = 'none';
+      return;
+    }
+    document.getElementById('pagamento-footer').style.display = 'flex';
+    lista.innerHTML = pendentes.map(o => `
+      <div class="pagamento-item" id="pitem-${o.id}" onclick="togglePagItem('${o.id}', ${o.valor})">
+        <input type="checkbox" id="chk-${o.id}" onchange="togglePagItem('${o.id}', ${o.valor})" />
+        <div class="pagamento-item-info">
+          <div class="pagamento-item-nome">${o.nome_cliente}</div>
+          <div class="pagamento-item-det">${o.tipo_conserto} · Entrada: ${fmtData(o.data_entrada)}</div>
+        </div>
+        <div class="pagamento-item-val">${fmtMoeda(o.valor)}</div>
+      </div>
+    `).join('');
+    ordensSelecionadas.clear();
+    atualizarTotalPag();
+
+    // Histórico
+    const hist = await sb('consertos_pagamentos?select=*,consertos_ordens(nome_cliente,tipo_conserto)&order=created_at.desc&limit=50');
+    const tb = document.getElementById('tbody-historico-pag');
+    if (!hist.length) { tb.innerHTML = `<tr class="loading-row"><td colspan="6">Nenhum pagamento registrado.</td></tr>`; return; }
+    tb.innerHTML = hist.map((p,i) => `
+      <tr>
+        <td style="color:var(--text3);font-size:12px">${i+1}</td>
+        <td><strong>${p.consertos_ordens?.nome_cliente || '—'}</strong></td>
+        <td>${p.consertos_ordens?.tipo_conserto || '—'}</td>
+        <td>${fmtData(p.data_pagamento)}</td>
+        <td><span class="badge badge-paga">${fmtForma(p.forma_pagamento)}</span></td>
+        <td style="font-family:'DM Serif Display',serif; color:var(--accent)">${fmtMoeda(p.valor_pago)}</td>
+      </tr>
+    `).join('');
+  } catch(e) { toast('Erro ao carregar pagamentos: ' + e.message, 'error'); }
+}
+
+function togglePagItem(id, valor) {
+  const chk = document.getElementById(`chk-${id}`);
+  const item = document.getElementById(`pitem-${id}`);
+  if (event.target.tagName !== 'INPUT') chk.checked = !chk.checked;
+  if (chk.checked) { ordensSelecionadas.add(id); item.classList.add('selected'); }
+  else { ordensSelecionadas.delete(id); item.classList.remove('selected'); }
+  atualizarTotalPag();
+}
+
+function atualizarTotalPag() {
+  let total = 0;
+  ordensSelecionadas.forEach(id => {
+    const o = todasOrdens.find(x => x.id === id);
+    if (o) total += Number(o.valor);
+  });
+  document.getElementById('pag-total').textContent = fmtMoeda(total);
+}
+
+async function registrarPagamento() {
+  if (!ordensSelecionadas.size) { toast('Selecione ao menos uma ordem.', 'error'); return; }
+  const data = document.getElementById('pag-data').value;
+  const forma = document.getElementById('pag-forma').value;
+  const obs = document.getElementById('pag-obs').value.trim();
+  if (!data) { toast('Informe a data do pagamento.', 'error'); return; }
+  try {
+    for (const id of ordensSelecionadas) {
+      const o = todasOrdens.find(x => x.id === id);
+      if (!o) continue;
+      await sb('consertos_pagamentos', { method: 'POST', body: JSON.stringify({
+        ordem_id: id, valor_pago: o.valor, data_pagamento: data, forma_pagamento: forma, observacoes: obs || null
+      })});
+      await sb(`consertos_ordens?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'paga', updated_at: new Date().toISOString() }) });
+    }
+    toast(`${ordensSelecionadas.size} pagamento(s) registrado(s)!`, 'success');
+    ordensSelecionadas.clear();
+    await carregarOrdens();
+    carregarPagamentosPage();
+  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+}
+
+// ═══ RELATORIO ═══
+function mesAtual() {
+  const ini = new Date(); ini.setDate(1);
+  const fim = new Date(ini.getFullYear(), ini.getMonth()+1, 0);
+  document.getElementById('rel-inicio').value = ini.toISOString().split('T')[0];
+  document.getElementById('rel-fim').value = fim.toISOString().split('T')[0];
+  gerarRelatorio();
+}
+
+async function gerarRelatorio() {
+  const ini = document.getElementById('rel-inicio').value;
+  const fim = document.getElementById('rel-fim').value;
+  if (!ini || !fim) { toast('Informe o período.', 'error'); return; }
+  try {
+    const ordens = await sb(`consertos_ordens?select=*&data_entrada=gte.${ini}&data_entrada=lte.${fim}`);
+    const pags = await sb(`consertos_pagamentos?select=*&data_pagamento=gte.${ini}&data_pagamento=lte.${fim}`);
+
+    document.getElementById('rel-total-ordens').textContent = ordens.length;
+    const fat = ordens.reduce((s,o) => s + Number(o.valor), 0);
+    document.getElementById('rel-faturamento').textContent = fmtMoeda(fat);
+    const rec = pags.reduce((s,p) => s + Number(p.valor_pago), 0);
+    document.getElementById('rel-recebido').textContent = fmtMoeda(rec);
+
+    // Por tipo
+    const porTipo = {};
+    ordens.forEach(o => {
+      if (!porTipo[o.tipo_conserto]) porTipo[o.tipo_conserto] = { qtd: 0, val: 0 };
+      porTipo[o.tipo_conserto].qtd++;
+      porTipo[o.tipo_conserto].val += Number(o.valor);
+    });
+    document.getElementById('rel-por-tipo').innerHTML = Object.entries(porTipo)
+      .sort((a,b) => b[1].val - a[1].val)
+      .map(([tipo, d]) => `<tr>
+        <td style="padding:8px 12px">${tipo}</td>
+        <td style="padding:8px 12px; color:var(--text3)">${d.qtd}</td>
+        <td style="padding:8px 12px; font-family:'DM Serif Display',serif; color:var(--accent)">${fmtMoeda(d.val)}</td>
+        <td style="padding:8px 12px; color:var(--text3)">${fmtMoeda(d.val / d.qtd)}</td>
+      </tr>`).join('') || `<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text3)">Sem dados</td></tr>`;
+
+    // Por status
+    const porStatus = {};
+    ordens.forEach(o => {
+      if (!porStatus[o.status]) porStatus[o.status] = { qtd: 0, val: 0 };
+      porStatus[o.status].qtd++;
+      porStatus[o.status].val += Number(o.valor);
+    });
+    document.getElementById('rel-por-status').innerHTML = Object.entries(porStatus)
+      .map(([st, d]) => `<tr>
+        <td style="padding:8px 12px">${badgeStatus(st)}</td>
+        <td style="padding:8px 12px; color:var(--text3)">${d.qtd}</td>
+        <td style="padding:8px 12px; font-family:'DM Serif Display',serif; color:var(--accent)">${fmtMoeda(d.val)}</td>
+      </tr>`).join('') || `<tr><td colspan="3" style="text-align:center;padding:20px;color:var(--text3)">Sem dados</td></tr>`;
+
+    document.getElementById('relatorio-resultado').style.display = 'block';
+  } catch(e) { toast('Erro ao gerar relatório: ' + e.message, 'error'); }
+}
+
+// ═══ UTILS ═══
+function fmtMoeda(v) {
+  return 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtData(d) {
+  if (!d) return '—';
+  const [y,m,dd] = d.split('-');
+  return `${dd}/${m}/${y}`;
+}
+function fmtForma(f) {
+  const m = { dinheiro: 'Dinheiro', pix: 'PIX', cartao_debito: 'Débito', cartao_credito: 'Crédito', outro: 'Outro' };
+  return m[f] || f;
+}
+function badgeStatus(s) {
+  const l = { aberta: 'Aberta', retornada: 'Retornada', paga: 'Paga', cancelada: 'Cancelada' };
+  return `<span class="badge badge-${s}">${l[s] || s}</span>`;
+}
+function escHtml(s) { return s.replace(/'/g, "\\'"); }
+function abrirModal(id) { document.getElementById(id).classList.add('open'); }
+function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+</script>
+</body>
+</html>
