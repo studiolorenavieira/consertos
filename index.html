@@ -753,21 +753,44 @@ function showPage(p) {
   document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
   document.getElementById(`page-${p}`).classList.add('active');
   event.currentTarget.classList.add('active');
-  if (p === 'pagamentos') carregarPagamentosPage();
+  if (p === 'pagamentos') { carregarPagamentosPage(); }
   if (p === 'relatorios') {}
 }
 
-// ═══ TIPOS ═══
-async function carregarTipos() {
-  try {
-    tiposConserto = await sb('consertos_tipos?select=*&ativo=eq.true&order=nome');
-    const sel = document.getElementById('f-tipo');
-    tiposConserto.forEach(t => {
-      const o = document.createElement('option');
-      o.value = t.nome; o.textContent = t.nome;
-      sel.appendChild(o);
-    });
-  } catch(e) { console.error(e); }
+// ═══ TIPOS (hardcoded com preços) ═══
+const TIPOS_CONSERTO = [
+  { nome: 'Barra Simples',                valor: 30.00 },
+  { nome: 'Barra Elaborada',              valor: 40.00 },
+  { nome: 'Ajuste Cintura Simples',       valor: 30.00 },
+  { nome: 'Ajuste Cintura Elaborada',     valor: 40.00 },
+  { nome: 'Ajuste Cint. Cós Tradicional', valor: 30.00 },
+  { nome: 'Ajuste Cint. Cós Elaborado',   valor: 40.00 },
+  { nome: 'Pence',                        valor: 15.00 },
+  { nome: 'Outros',                       valor: null  },
+];
+
+function carregarTipos() {
+  const sel = document.getElementById('f-tipo');
+  TIPOS_CONSERTO.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t.nome;
+    o.textContent = t.valor !== null
+      ? `${t.nome} — R$ ${t.valor.toFixed(2).replace('.',',')}`
+      : t.nome;
+    o.dataset.valor = t.valor !== null ? t.valor : '';
+    sel.appendChild(o);
+  });
+  // Auto-preenche valor ao selecionar tipo
+  sel.addEventListener('change', () => {
+    const opt = sel.options[sel.selectedIndex];
+    const v = opt?.dataset.valor;
+    if (v !== undefined && v !== '') {
+      document.getElementById('f-valor').value = v;
+    } else if (opt?.value === 'Outros') {
+      document.getElementById('f-valor').value = '';
+      document.getElementById('f-valor').focus();
+    }
+  });
 }
 
 // ═══ ORDENS ═══
@@ -939,43 +962,64 @@ async function cancelarOrdem(id) {
 
 // ═══ PAGAMENTOS PAGE ═══
 async function carregarPagamentosPage() {
+  renderPendentesPagamento();
+  carregarHistoricoPagamentos();
+}
+
+function renderPendentesPagamento() {
+  const pendentes = todasOrdens.filter(o => o.status === 'retornada');
+  const lista = document.getElementById('lista-pagamentos-pendentes');
+  ordensSelecionadas.clear();
+  atualizarTotalPag();
+  if (!pendentes.length) {
+    lista.innerHTML = `<div class="empty-state"><h3>Nenhuma ordem retornada pendente</h3><p>Registre o retorno nas ordens abertas primeiro.</p></div>`;
+    document.getElementById('pagamento-footer').style.display = 'none';
+    return;
+  }
+  document.getElementById('pagamento-footer').style.display = 'flex';
+  lista.innerHTML = pendentes.map(o => `
+    <div class="pagamento-item" id="pitem-${o.id}" onclick="togglePagItem('${o.id}', ${o.valor})">
+      <input type="checkbox" id="chk-${o.id}" />
+      <div class="pagamento-item-info">
+        <div class="pagamento-item-nome">${o.nome_cliente}</div>
+        <div class="pagamento-item-det">${o.tipo_conserto} · Entrada: ${fmtData(o.data_entrada)}</div>
+      </div>
+      <div class="pagamento-item-val">${fmtMoeda(o.valor)}</div>
+    </div>
+  `).join('');
+}
+
+async function carregarHistoricoPagamentos() {
+  const tb = document.getElementById('tbody-historico-pag');
+  tb.innerHTML = `<tr class="loading-row"><td colspan="6">Carregando...</td></tr>`;
   try {
-    const pendentes = todasOrdens.filter(o => o.status === 'retornada');
-    const lista = document.getElementById('lista-pagamentos-pendentes');
-    if (!pendentes.length) {
-      lista.innerHTML = `<div class="empty-state"><h3>Nenhuma ordem retornada pendente</h3><p>Registre o retorno nas ordens abertas primeiro.</p></div>`;
-      document.getElementById('pagamento-footer').style.display = 'none';
+    // Buscar pagamentos e ordens separadamente para evitar problemas de FK naming
+    const pags = await sb('consertos_pagamentos?select=*&order=created_at.desc&limit=100');
+    if (!pags.length) {
+      tb.innerHTML = `<tr class="loading-row"><td colspan="6">Nenhum pagamento registrado ainda.</td></tr>`;
       return;
     }
-    document.getElementById('pagamento-footer').style.display = 'flex';
-    lista.innerHTML = pendentes.map(o => `
-      <div class="pagamento-item" id="pitem-${o.id}" onclick="togglePagItem('${o.id}', ${o.valor})">
-        <input type="checkbox" id="chk-${o.id}" onchange="togglePagItem('${o.id}', ${o.valor})" />
-        <div class="pagamento-item-info">
-          <div class="pagamento-item-nome">${o.nome_cliente}</div>
-          <div class="pagamento-item-det">${o.tipo_conserto} · Entrada: ${fmtData(o.data_entrada)}</div>
-        </div>
-        <div class="pagamento-item-val">${fmtMoeda(o.valor)}</div>
-      </div>
-    `).join('');
-    ordensSelecionadas.clear();
-    atualizarTotalPag();
+    // Buscar dados das ordens referenciadas
+    const ids = [...new Set(pags.map(p => p.ordem_id))];
+    const ordens = await sb(`consertos_ordens?select=id,nome_cliente,tipo_conserto&id=in.(${ids.join(',')})`);
+    const ordensMap = {};
+    ordens.forEach(o => ordensMap[o.id] = o);
 
-    // Histórico
-    const hist = await sb('consertos_pagamentos?select=*,consertos_ordens(nome_cliente,tipo_conserto)&order=created_at.desc&limit=50');
-    const tb = document.getElementById('tbody-historico-pag');
-    if (!hist.length) { tb.innerHTML = `<tr class="loading-row"><td colspan="6">Nenhum pagamento registrado.</td></tr>`; return; }
-    tb.innerHTML = hist.map((p,i) => `
-      <tr>
+    tb.innerHTML = pags.map((p, i) => {
+      const o = ordensMap[p.ordem_id] || {};
+      return `<tr>
         <td style="color:var(--text3);font-size:12px">${i+1}</td>
-        <td><strong>${p.consertos_ordens?.nome_cliente || '—'}</strong></td>
-        <td>${p.consertos_ordens?.tipo_conserto || '—'}</td>
+        <td><strong>${o.nome_cliente || '—'}</strong></td>
+        <td>${o.tipo_conserto || '—'}</td>
         <td>${fmtData(p.data_pagamento)}</td>
         <td><span class="badge badge-paga">${fmtForma(p.forma_pagamento)}</span></td>
         <td style="font-family:'DM Serif Display',serif; color:var(--accent)">${fmtMoeda(p.valor_pago)}</td>
-      </tr>
-    `).join('');
-  } catch(e) { toast('Erro ao carregar pagamentos: ' + e.message, 'error'); }
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    tb.innerHTML = `<tr class="loading-row"><td colspan="6">Erro ao carregar histórico.</td></tr>`;
+    console.error(e);
+  }
 }
 
 function togglePagItem(id, valor) {
@@ -1014,7 +1058,8 @@ async function registrarPagamento() {
     toast(`${ordensSelecionadas.size} pagamento(s) registrado(s)!`, 'success');
     ordensSelecionadas.clear();
     await carregarOrdens();
-    carregarPagamentosPage();
+    renderPendentesPagamento();
+    carregarHistoricoPagamentos();
   } catch(e) { toast('Erro: ' + e.message, 'error'); }
 }
 
