@@ -304,6 +304,25 @@
     .form-select option { background: var(--surface2); }
     .form-textarea { resize: vertical; min-height: 72px; }
 
+    /* ── AJUSTE ITEM ── */
+    .ajuste-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface3);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 8px 12px;
+    }
+    .ajuste-item-nome { font-size: 13px; color: var(--text); flex: 1; }
+    .ajuste-item-val { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--accent); margin: 0 12px; }
+    .ajuste-item-rm {
+      background: none; border: none; cursor: pointer;
+      color: var(--text3); font-size: 16px; line-height: 1;
+      padding: 0 2px; transition: color 0.15s;
+    }
+    .ajuste-item-rm:hover { color: var(--danger); }
+
     /* ── FILTROS ── */
     .filters-bar {
       display: flex;
@@ -637,7 +656,7 @@
 
 <!-- ═══════ MODAL: NOVA ORDEM ═══════ -->
 <div class="modal-overlay" id="modal-ordem">
-  <div class="modal">
+  <div class="modal" style="width:580px">
     <div class="modal-title" id="modal-ordem-titulo">Nova Ordem de Conserto</div>
     <input type="hidden" id="ordem-edit-id" />
     <div class="form-grid">
@@ -650,20 +669,6 @@
         <input type="text" class="form-input" id="f-telefone" placeholder="(62) 9xxxx-xxxx" />
       </div>
       <div class="form-group">
-        <label class="form-label">Tipo de Conserto *</label>
-        <select class="form-select" id="f-tipo">
-          <option value="">Selecione...</option>
-        </select>
-      </div>
-      <div class="form-group form-full">
-        <label class="form-label">Descrição / Detalhes</label>
-        <textarea class="form-textarea" id="f-descricao" placeholder="Descreva o conserto necessário..."></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Valor (R$) *</label>
-        <input type="number" class="form-input" id="f-valor" placeholder="0,00" step="0.01" min="0" />
-      </div>
-      <div class="form-group">
         <label class="form-label">Data de Entrada *</label>
         <input type="date" class="form-input" id="f-entrada" />
       </div>
@@ -671,7 +676,38 @@
         <label class="form-label">Retorno Previsto *</label>
         <input type="date" class="form-input" id="f-retorno" />
       </div>
-      <div class="form-group">
+
+      <!-- AJUSTES -->
+      <div class="form-group form-full">
+        <label class="form-label">Ajustes *</label>
+
+        <!-- Lista de ajustes adicionados -->
+        <div id="ajustes-lista" style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;"></div>
+
+        <!-- Linha para adicionar novo ajuste -->
+        <div style="display:flex; gap:8px; align-items:center">
+          <select class="form-select" id="f-tipo" style="flex:1">
+            <option value="">Selecione o ajuste...</option>
+          </select>
+          <input type="number" class="form-input" id="f-valor-item" placeholder="Valor" step="0.01" min="0" style="width:100px" />
+          <button class="btn btn-ghost" onclick="adicionarAjuste()" style="white-space:nowrap; padding:8px 14px">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Adicionar
+          </button>
+        </div>
+
+        <!-- Total dos ajustes -->
+        <div style="display:flex; justify-content:flex-end; margin-top:10px; padding-top:10px; border-top:1px solid var(--border)">
+          <div style="font-size:12px; color:var(--text3); margin-right:8px; line-height:24px">Total:</div>
+          <div style="font-family:'DM Serif Display',serif; font-size:20px; color:var(--accent)" id="f-total-ajustes">R$ 0,00</div>
+        </div>
+      </div>
+
+      <div class="form-group form-full">
+        <label class="form-label">Descrição / Detalhes</label>
+        <textarea class="form-textarea" id="f-descricao" placeholder="Informações adicionais sobre o conserto..."></textarea>
+      </div>
+      <div class="form-group form-full">
         <label class="form-label">Observações</label>
         <input type="text" class="form-input" id="f-obs" placeholder="Opcional" />
       </div>
@@ -730,6 +766,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('pag-data').value = hoje;
   carregarTipos();
   carregarOrdens();
+  // Enter no campo de valor adiciona o ajuste
+  document.getElementById('f-valor-item').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); adicionarAjuste(); }
+  });
   // Relatorio: mês atual por padrão
   const ini = new Date(); ini.setDate(1);
   const fim = new Date(ini.getFullYear(), ini.getMonth() + 1, 0);
@@ -784,11 +824,12 @@ function carregarTipos() {
   sel.addEventListener('change', () => {
     const opt = sel.options[sel.selectedIndex];
     const v = opt?.dataset.valor;
+    const campo = document.getElementById('f-valor-item');
     if (v !== undefined && v !== '') {
-      document.getElementById('f-valor').value = v;
-    } else if (opt?.value === 'Outros') {
-      document.getElementById('f-valor').value = '';
-      document.getElementById('f-valor').focus();
+      campo.value = v;
+    } else {
+      campo.value = '';
+      if (opt?.value) campo.focus();
     }
   });
 }
@@ -864,16 +905,56 @@ function filtrarOrdens() {
   renderOrdens(f);
 }
 
+// ═══ AJUSTES (estado local do modal) ═══
+let ajustesAtivos = []; // [{nome, valor}]
+
+function renderAjustes() {
+  const lista = document.getElementById('ajustes-lista');
+  if (!ajustesAtivos.length) {
+    lista.innerHTML = `<div style="font-size:12px; color:var(--text3); padding:4px 0">Nenhum ajuste adicionado ainda.</div>`;
+  } else {
+    lista.innerHTML = ajustesAtivos.map((a, i) => `
+      <div class="ajuste-item">
+        <span class="ajuste-item-nome">${a.nome}</span>
+        <span class="ajuste-item-val">${fmtMoeda(a.valor)}</span>
+        <button class="ajuste-item-rm" onclick="removerAjuste(${i})" title="Remover">×</button>
+      </div>
+    `).join('');
+  }
+  const total = ajustesAtivos.reduce((s, a) => s + a.valor, 0);
+  document.getElementById('f-total-ajustes').textContent = fmtMoeda(total);
+}
+
+function adicionarAjuste() {
+  const sel = document.getElementById('f-tipo');
+  const nome = sel.value;
+  const valor = parseFloat(document.getElementById('f-valor-item').value);
+  if (!nome) { toast('Selecione o tipo de ajuste.', 'error'); return; }
+  if (isNaN(valor) || valor <= 0) { toast('Informe um valor válido.', 'error'); return; }
+  ajustesAtivos.push({ nome, valor });
+  renderAjustes();
+  // Limpar campos para próximo ajuste
+  sel.value = '';
+  document.getElementById('f-valor-item').value = '';
+  sel.focus();
+}
+
+function removerAjuste(idx) {
+  ajustesAtivos.splice(idx, 1);
+  renderAjustes();
+}
+
 // ═══ MODAL ORDEM ═══
 function abrirModalNovaOrdem() {
   document.getElementById('modal-ordem-titulo').textContent = 'Nova Ordem de Conserto';
   document.getElementById('ordem-edit-id').value = '';
   ['f-cliente','f-telefone','f-descricao','f-obs'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-tipo').value = '';
-  document.getElementById('f-valor').value = '';
+  document.getElementById('f-valor-item').value = '';
+  ajustesAtivos = [];
+  renderAjustes();
   const hoje = new Date().toISOString().split('T')[0];
   document.getElementById('f-entrada').value = hoje;
-  // Retorno padrão: 7 dias
   const ret = new Date(); ret.setDate(ret.getDate() + 7);
   document.getElementById('f-retorno').value = ret.toISOString().split('T')[0];
   abrirModal('modal-ordem');
@@ -886,28 +967,55 @@ function editarOrdem(id) {
   document.getElementById('ordem-edit-id').value = id;
   document.getElementById('f-cliente').value = o.nome_cliente;
   document.getElementById('f-telefone').value = o.telefone || '';
-  document.getElementById('f-tipo').value = o.tipo_conserto;
   document.getElementById('f-descricao').value = o.descricao || '';
-  document.getElementById('f-valor').value = o.valor;
+  document.getElementById('f-obs').value = o.observacoes || '';
   document.getElementById('f-entrada').value = o.data_entrada;
   document.getElementById('f-retorno').value = o.data_retorno_previsto;
-  document.getElementById('f-obs').value = o.observacoes || '';
+  document.getElementById('f-tipo').value = '';
+  document.getElementById('f-valor-item').value = '';
+  // Reconstruir ajustes a partir do tipo_conserto e valor salvo
+  // Formato salvo: "Tipo A + Tipo B" com valor total
+  // Para edição, colocamos como um único item com o valor total
+  const tipos = o.tipo_conserto.split(' + ');
+  const valorTotal = Number(o.valor);
+  if (tipos.length === 1) {
+    ajustesAtivos = [{ nome: tipos[0], valor: valorTotal }];
+  } else {
+    // Múltiplos: tentamos reconstruir pelo preço padrão; resto vai pro último
+    let somaConhecida = 0;
+    const itens = tipos.map((nome, i) => {
+      const tp = TIPOS_CONSERTO.find(t => t.nome === nome);
+      const v = (tp && tp.valor !== null) ? tp.valor : null;
+      if (v !== null) somaConhecida += v;
+      return { nome, valor: v };
+    });
+    // Se a soma bate, usa os valores conhecidos; senão distribui igualmente
+    if (Math.abs(somaConhecida - valorTotal) < 0.01) {
+      ajustesAtivos = itens.map(it => ({ nome: it.nome, valor: it.valor ?? 0 }));
+    } else {
+      const parcela = valorTotal / tipos.length;
+      ajustesAtivos = tipos.map(nome => ({ nome, valor: Math.round(parcela * 100) / 100 }));
+    }
+  }
+  renderAjustes();
   abrirModal('modal-ordem');
 }
 
 async function salvarOrdem() {
   const cliente = document.getElementById('f-cliente').value.trim();
-  const tipo = document.getElementById('f-tipo').value;
-  const valor = parseFloat(document.getElementById('f-valor').value);
   const entrada = document.getElementById('f-entrada').value;
   const retorno = document.getElementById('f-retorno').value;
-  if (!cliente || !tipo || !entrada || !retorno || isNaN(valor)) {
-    toast('Preencha todos os campos obrigatórios.', 'error'); return;
-  }
+  if (!cliente) { toast('Informe o nome da cliente.', 'error'); return; }
+  if (!entrada || !retorno) { toast('Informe as datas.', 'error'); return; }
+  if (!ajustesAtivos.length) { toast('Adicione ao menos um ajuste.', 'error'); return; }
+
+  const tipo_conserto = ajustesAtivos.map(a => a.nome).join(' + ');
+  const valor = ajustesAtivos.reduce((s, a) => s + a.valor, 0);
+
   const payload = {
     nome_cliente: cliente,
     telefone: document.getElementById('f-telefone').value.trim() || null,
-    tipo_conserto: tipo,
+    tipo_conserto,
     descricao: document.getElementById('f-descricao').value.trim() || null,
     valor,
     data_entrada: entrada,
