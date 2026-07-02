@@ -439,6 +439,7 @@
 <div class="nav">
   <div class="nav-tab active" onclick="showPage('ordens')">Ordens</div>
   <div class="nav-tab" onclick="showPage('pagamentos')">Pagamentos</div>
+  <div class="nav-tab" onclick="showPage('costureiras')">Costureiras</div>
   <div class="nav-tab" onclick="showPage('relatorios')">Relatórios</div>
 </div>
 
@@ -499,6 +500,7 @@
             <th>#</th>
             <th>Cliente</th>
             <th>Tipo de Conserto</th>
+            <th>Costureira</th>
             <th>Entrada</th>
             <th>Retorno Prev.</th>
             <th>Valor</th>
@@ -558,6 +560,16 @@
       </div>
     </div>
 
+    <!-- PAGAMENTO COSTUREIRAS -->
+    <div class="card" style="margin-bottom:20px; margin-top:8px">
+      <div style="font-size:11px; color:var(--text3); margin-bottom:16px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;">
+        A Pagar · Costureiras
+      </div>
+      <div id="lista-pagar-costureiras">
+        <div class="empty-state"><h3>Carregando...</h3></div>
+      </div>
+    </div>
+
     <div class="section-header" style="margin-top:24px">
       <div>
         <div class="section-title">Histórico de Pagamentos</div>
@@ -577,6 +589,36 @@
         </thead>
         <tbody id="tbody-historico-pag">
           <tr class="loading-row"><td colspan="6">Carregando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ COSTUREIRAS ═══════════════════ -->
+  <div class="page" id="page-costureiras">
+    <div class="section-header">
+      <div>
+        <div class="section-title">Costureiras</div>
+        <div class="section-subtitle">Cadastro e gestão</div>
+      </div>
+      <button class="btn btn-primary" onclick="abrirModalCostureira()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nova Costureira
+      </button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Telefone</th>
+            <th>Chave PIX</th>
+            <th>Status</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-costureiras">
+          <tr class="loading-row"><td colspan="5">Carregando...</td></tr>
         </tbody>
       </table>
     </div>
@@ -669,6 +711,12 @@
         <input type="text" class="form-input" id="f-telefone" placeholder="(62) 9xxxx-xxxx" />
       </div>
       <div class="form-group">
+        <label class="form-label">Costureira</label>
+        <select class="form-select" id="f-costureira">
+          <option value="">Sem costureira</option>
+        </select>
+      </div>
+      <div class="form-group">
         <label class="form-label">Data de Entrada *</label>
         <input type="date" class="form-input" id="f-entrada" />
       </div>
@@ -719,6 +767,32 @@
   </div>
 </div>
 
+<!-- ═══════ MODAL: COSTUREIRA ═══════ -->
+<div class="modal-overlay" id="modal-costureira">
+  <div class="modal" style="width:440px">
+    <div class="modal-title" id="modal-costureira-titulo">Nova Costureira</div>
+    <input type="hidden" id="costureira-edit-id" />
+    <div class="form-grid">
+      <div class="form-group form-full">
+        <label class="form-label">Nome *</label>
+        <input type="text" class="form-input" id="fc-nome" placeholder="Nome completo" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Telefone</label>
+        <input type="text" class="form-input" id="fc-telefone" placeholder="(62) 9xxxx-xxxx" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Chave PIX</label>
+        <input type="text" class="form-input" id="fc-pix" placeholder="CPF, e-mail ou telefone" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal('modal-costureira')">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarCostureira()">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════ MODAL: REGISTRAR RETORNO ═══════ -->
 <div class="modal-overlay" id="modal-retorno">
   <div class="modal" style="width:400px">
@@ -758,6 +832,7 @@ async function sb(path, opts = {}) {
 let todasOrdens = [];
 let tiposConserto = [];
 let ordensSelecionadas = new Set();
+let todasCostureiras = [];
 
 // ═══ INIT ═══
 document.addEventListener('DOMContentLoaded', () => {
@@ -765,12 +840,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('f-entrada').value = hoje;
   document.getElementById('pag-data').value = hoje;
   carregarTipos();
+  carregarCostureiras();
   carregarOrdens();
-  // Enter no campo de valor adiciona o ajuste
   document.getElementById('f-valor-item').addEventListener('keydown', e => {
     if (e.key === 'Enter') { e.preventDefault(); adicionarAjuste(); }
   });
-  // Relatorio: mês atual por padrão
   const ini = new Date(); ini.setDate(1);
   const fim = new Date(ini.getFullYear(), ini.getMonth() + 1, 0);
   document.getElementById('rel-inicio').value = ini.toISOString().split('T')[0];
@@ -793,8 +867,97 @@ function showPage(p) {
   document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
   document.getElementById(`page-${p}`).classList.add('active');
   event.currentTarget.classList.add('active');
-  if (p === 'pagamentos') { carregarPagamentosPage(); }
-  if (p === 'relatorios') {}
+  if (p === 'pagamentos') carregarPagamentosPage();
+  if (p === 'costureiras') renderTabelaCostureiras();
+}
+
+// ═══ COSTUREIRAS ═══
+async function carregarCostureiras() {
+  try {
+    todasCostureiras = await sb('consertos_costureiras?select=*&order=nome');
+    popularSelectCostureira();
+  } catch(e) { console.error('Erro costureiras:', e); }
+}
+
+function popularSelectCostureira() {
+  const sel = document.getElementById('f-costureira');
+  // Limpa opções antigas (mantém a primeira "Sem costureira")
+  while (sel.options.length > 1) sel.remove(1);
+  todasCostureiras.filter(c => c.ativo).forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.id; o.textContent = c.nome;
+    sel.appendChild(o);
+  });
+}
+
+function renderTabelaCostureiras() {
+  const tb = document.getElementById('tbody-costureiras');
+  if (!todasCostureiras.length) {
+    tb.innerHTML = `<tr><td colspan="5"><div class="empty-state"><h3>Nenhuma costureira cadastrada</h3></div></td></tr>`;
+    return;
+  }
+  tb.innerHTML = todasCostureiras.map(c => `<tr>
+    <td><strong>${c.nome}</strong></td>
+    <td>${c.telefone || '—'}</td>
+    <td style="font-size:12px; color:var(--text3)">${c.chave_pix || '—'}</td>
+    <td>${c.ativo ? '<span class="badge badge-paga">Ativa</span>' : '<span class="badge badge-cancelada">Inativa</span>'}</td>
+    <td>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="editarCostureira('${c.id}')">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="toggleAtivoCostureira('${c.id}', ${c.ativo})">${c.ativo ? 'Desativar' : 'Ativar'}</button>
+      </div>
+    </td>
+  </tr>`).join('');
+}
+
+function abrirModalCostureira() {
+  document.getElementById('modal-costureira-titulo').textContent = 'Nova Costureira';
+  document.getElementById('costureira-edit-id').value = '';
+  ['fc-nome','fc-telefone','fc-pix'].forEach(id => document.getElementById(id).value = '');
+  abrirModal('modal-costureira');
+}
+
+function editarCostureira(id) {
+  const c = todasCostureiras.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('modal-costureira-titulo').textContent = 'Editar Costureira';
+  document.getElementById('costureira-edit-id').value = id;
+  document.getElementById('fc-nome').value = c.nome;
+  document.getElementById('fc-telefone').value = c.telefone || '';
+  document.getElementById('fc-pix').value = c.chave_pix || '';
+  abrirModal('modal-costureira');
+}
+
+async function salvarCostureira() {
+  const nome = document.getElementById('fc-nome').value.trim();
+  if (!nome) { toast('Informe o nome.', 'error'); return; }
+  const payload = {
+    nome,
+    telefone: document.getElementById('fc-telefone').value.trim() || null,
+    chave_pix: document.getElementById('fc-pix').value.trim() || null,
+  };
+  const editId = document.getElementById('costureira-edit-id').value;
+  try {
+    if (editId) {
+      await sb(`consertos_costureiras?id=eq.${editId}`, { method: 'PATCH', body: JSON.stringify(payload) });
+      toast('Costureira atualizada.', 'success');
+    } else {
+      await sb('consertos_costureiras', { method: 'POST', body: JSON.stringify({ ...payload, ativo: true }) });
+      toast('Costureira cadastrada!', 'success');
+    }
+    fecharModal('modal-costureira');
+    await carregarCostureiras();
+    renderTabelaCostureiras();
+  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+}
+
+async function toggleAtivoCostureira(id, atual) {
+  try {
+    await sb(`consertos_costureiras?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ ativo: !atual }) });
+    toast(!atual ? 'Costureira ativada.' : 'Costureira desativada.', 'success');
+    await carregarCostureiras();
+    renderTabelaCostureiras();
+  } catch(e) { toast('Erro: ' + e.message, 'error'); }
 }
 
 // ═══ TIPOS (hardcoded com preços) ═══
@@ -876,10 +1039,12 @@ function renderOrdens(lista) {
   }
   tb.innerHTML = lista.map(o => {
     const atrasada = o.status === 'aberta' && o.data_retorno_previsto < new Date().toISOString().split('T')[0];
+    const costureira = todasCostureiras.find(c => c.id === o.costureira_id);
     return `<tr>
       <td style="color:var(--text3); font-size:12px">#${o.numero_ordem || '—'}</td>
       <td><strong>${o.nome_cliente}</strong>${o.telefone ? `<div style="font-size:11px;color:var(--text3)">${o.telefone}</div>` : ''}</td>
       <td>${o.tipo_conserto}</td>
+      <td style="font-size:12px; color:var(--text2)">${costureira ? costureira.nome : '<span style="color:var(--text3)">—</span>'}</td>
       <td>${fmtData(o.data_entrada)}</td>
       <td style="${atrasada ? 'color:var(--danger)' : ''}">${fmtData(o.data_retorno_previsto)}${atrasada ? ' ⚠' : ''}</td>
       <td style="font-family:'DM Serif Display',serif; color:var(--accent)">${fmtMoeda(o.valor)}</td>
@@ -951,6 +1116,7 @@ function abrirModalNovaOrdem() {
   ['f-cliente','f-telefone','f-descricao','f-obs'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-tipo').value = '';
   document.getElementById('f-valor-item').value = '';
+  document.getElementById('f-costureira').value = '';
   ajustesAtivos = [];
   renderAjustes();
   const hoje = new Date().toISOString().split('T')[0];
@@ -971,6 +1137,7 @@ function editarOrdem(id) {
   document.getElementById('f-obs').value = o.observacoes || '';
   document.getElementById('f-entrada').value = o.data_entrada;
   document.getElementById('f-retorno').value = o.data_retorno_previsto;
+  document.getElementById('f-costureira').value = o.costureira_id || '';
   document.getElementById('f-tipo').value = '';
   document.getElementById('f-valor-item').value = '';
   // Reconstruir ajustes a partir do tipo_conserto e valor salvo
@@ -1012,10 +1179,12 @@ async function salvarOrdem() {
   const tipo_conserto = ajustesAtivos.map(a => a.nome).join(' + ');
   const valor = ajustesAtivos.reduce((s, a) => s + a.valor, 0);
 
+  const costureira_id = document.getElementById('f-costureira').value || null;
   const payload = {
     nome_cliente: cliente,
     telefone: document.getElementById('f-telefone').value.trim() || null,
     tipo_conserto,
+    costureira_id,
     descricao: document.getElementById('f-descricao').value.trim() || null,
     valor,
     data_entrada: entrada,
@@ -1071,7 +1240,53 @@ async function cancelarOrdem(id) {
 // ═══ PAGAMENTOS PAGE ═══
 async function carregarPagamentosPage() {
   renderPendentesPagamento();
+  renderPagarCostureiras();
   carregarHistoricoPagamentos();
+}
+
+function renderPagarCostureiras() {
+  // Ordens retornadas ou pagas que têm costureira e ainda não foram pagas à costureira
+  // Para simplificar: ordens com status 'retornada' que têm costureira_id
+  const comCostureira = todasOrdens.filter(o =>
+    o.costureira_id && ['retornada', 'paga'].includes(o.status)
+  );
+  const div = document.getElementById('lista-pagar-costureiras');
+  if (!comCostureira.length) {
+    div.innerHTML = `<p style="color:var(--text3); font-size:13px">Nenhuma ordem com costureira atribuída no momento.</p>`;
+    return;
+  }
+  // Agrupar por costureira
+  const grupos = {};
+  comCostureira.forEach(o => {
+    if (!grupos[o.costureira_id]) grupos[o.costureira_id] = [];
+    grupos[o.costureira_id].push(o);
+  });
+  div.innerHTML = Object.entries(grupos).map(([cid, ordens]) => {
+    const costureira = todasCostureiras.find(c => c.id === cid);
+    const total = ordens.reduce((s, o) => s + Number(o.valor), 0);
+    return `
+      <div style="background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:10px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
+          <div>
+            <div style="font-weight:600; color:var(--text); font-size:14px">${costureira?.nome || '—'}</div>
+            ${costureira?.chave_pix ? `<div style="font-size:11px; color:var(--text3); margin-top:2px">PIX: ${costureira.chave_pix}</div>` : ''}
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em">${ordens.length} conserto(s)</div>
+            <div style="font-family:'DM Serif Display',serif; font-size:20px; color:var(--accent)">${fmtMoeda(total)}</div>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px">
+          ${ordens.map(o => `
+            <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text3); padding:4px 0; border-top:1px solid var(--border)">
+              <span>${o.nome_cliente} · ${o.tipo_conserto}</span>
+              <span style="color:var(--text2)">${fmtMoeda(o.valor)} · ${badgeStatus(o.status)}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 function renderPendentesPagamento() {
