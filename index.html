@@ -1,1471 +1,418 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Consertos · Lorena Vieira</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #0e0c0b;
-      --surface: #161412;
-      --surface2: #1e1b18;
-      --surface3: #252119;
-      --border: #2e2924;
-      --border2: #3a342d;
-      --accent: #c9a96e;
-      --accent2: #e8c99a;
-      --accent-dim: rgba(201,169,110,0.12);
-      --accent-glow: rgba(201,169,110,0.06);
-      --text: #f0ebe4;
-      --text2: #a89880;
-      --text3: #6b5f52;
-      --danger: #c96e6e;
-      --danger-dim: rgba(201,110,110,0.12);
-      --success: #6ec98a;
-      --success-dim: rgba(110,201,138,0.12);
-      --warn: #c9b06e;
-      --warn-dim: rgba(201,176,110,0.12);
-      --radius: 8px;
-      --radius-lg: 12px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
-      min-height: 100vh;
-    }
-
-    /* ── HEADER ── */
-    .header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 60px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-    .header-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .header-brand h1 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 18px;
-      color: var(--accent2);
-      letter-spacing: 0.02em;
-    }
-    .header-brand span {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--text3);
-    }
-    .header-sep { width: 1px; height: 20px; background: var(--border); }
-
-    /* ── NAV TABS ── */
-    .nav {
-      display: flex;
-      gap: 4px;
-      background: var(--surface);
-      padding: 0 32px;
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-tab {
-      padding: 12px 20px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text3);
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      transition: all 0.15s;
-      letter-spacing: 0.03em;
-    }
-    .nav-tab:hover { color: var(--text2); }
-    .nav-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-    /* ── LAYOUT ── */
-    .main { padding: 28px 32px; max-width: 1280px; margin: 0 auto; }
-
-    .page { display: none; }
-    .page.active { display: block; }
-
-    /* ── SECTION HEADER ── */
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .section-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 22px;
-      color: var(--text);
-    }
-    .section-subtitle {
-      font-size: 12px;
-      color: var(--text3);
-      margin-top: 2px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-
-    /* ── BOTÕES ── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 16px;
-      border-radius: var(--radius);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-      transition: all 0.15s;
-      font-family: 'DM Sans', sans-serif;
-      letter-spacing: 0.02em;
-    }
-    .btn-primary { background: var(--accent); color: #1a1207; }
-    .btn-primary:hover { background: var(--accent2); }
-    .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
-    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
-    .btn-danger { background: var(--danger-dim); color: var(--danger); border: 1px solid transparent; }
-    .btn-danger:hover { border-color: var(--danger); }
-    .btn-sm { padding: 5px 10px; font-size: 12px; }
-
-    /* ── CARDS ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-    .card-header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-
-    /* ── STATS ROW ── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-    .stat-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 18px 20px;
-    }
-    .stat-label {
-      font-size: 11px;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text3);
-      margin-bottom: 8px;
-    }
-    .stat-value {
-      font-family: 'DM Serif Display', serif;
-      font-size: 28px;
-      color: var(--accent2);
-      line-height: 1;
-    }
-    .stat-sub { font-size: 12px; color: var(--text3); margin-top: 4px; }
-
-    /* ── TABELA ── */
-    .table-wrap {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-    table { width: 100%; border-collapse: collapse; }
-    thead { background: var(--surface2); }
-    th {
-      padding: 11px 16px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text3);
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    td {
-      padding: 13px 16px;
-      font-size: 13px;
-      color: var(--text2);
-      border-bottom: 1px solid var(--border);
-    }
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: var(--surface2); }
-    td strong { color: var(--text); font-weight: 500; }
-
-    /* ── BADGES ── */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 8px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .badge-aberta { background: var(--accent-dim); color: var(--accent); }
-    .badge-retornada { background: var(--warn-dim); color: var(--warn); }
-    .badge-paga { background: var(--success-dim); color: var(--success); }
-    .badge-cancelada { background: rgba(80,70,60,0.3); color: var(--text3); }
-
-    /* ── MODAL ── */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(4px);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal {
-      background: var(--surface);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius-lg);
-      width: 540px;
-      max-height: 90vh;
-      overflow-y: auto;
-      padding: 28px;
-      transform: translateY(16px);
-      transition: transform 0.2s;
-    }
-    .modal-overlay.open .modal { transform: translateY(0); }
-    .modal-title {
-      font-family: 'DM Serif Display', serif;
-      font-size: 20px;
-      color: var(--text);
-      margin-bottom: 20px;
-    }
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 24px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-    }
-
-    /* ── FORM ── */
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .form-full { grid-column: 1 / -1; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; }
-    .form-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text3);
-    }
-    .form-input, .form-select, .form-textarea {
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      padding: 9px 12px;
-      font-size: 13px;
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      transition: border-color 0.15s;
-      outline: none;
-    }
-    .form-input:focus, .form-select:focus, .form-textarea:focus {
-      border-color: var(--accent);
-      background: var(--surface3);
-    }
-    .form-select option { background: var(--surface2); }
-    .form-textarea { resize: vertical; min-height: 72px; }
-
-    /* ── AJUSTE ITEM ── */
-    .ajuste-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--surface3);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      padding: 8px 12px;
-    }
-    .ajuste-item-nome { font-size: 13px; color: var(--text); flex: 1; }
-    .ajuste-item-val { font-family: 'DM Serif Display', serif; font-size: 15px; color: var(--accent); margin: 0 12px; }
-    .ajuste-item-rm {
-      background: none; border: none; cursor: pointer;
-      color: var(--text3); font-size: 16px; line-height: 1;
-      padding: 0 2px; transition: color 0.15s;
-    }
-    .ajuste-item-rm:hover { color: var(--danger); }
-
-    /* ── FILTROS ── */
-    .filters-bar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .filter-input {
-      background: var(--surface);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      padding: 8px 14px;
-      color: var(--text);
-      font-size: 13px;
-      font-family: 'DM Sans', sans-serif;
-      outline: none;
-    }
-    .filter-input:focus { border-color: var(--accent); }
-    .filter-input::placeholder { color: var(--text3); }
-
-    /* ── LOADING / EMPTY ── */
-    .loading-row td { text-align: center; padding: 40px; color: var(--text3); }
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--text3);
-    }
-    .empty-state h3 { font-size: 16px; color: var(--text2); margin-bottom: 6px; }
-
-    /* ── TOAST ── */
-    .toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 500;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .toast {
-      background: var(--surface2);
-      border: 1px solid var(--border2);
-      border-left: 3px solid var(--accent);
-      border-radius: var(--radius);
-      padding: 12px 16px;
-      font-size: 13px;
-      color: var(--text);
-      animation: slideIn 0.2s ease;
-      min-width: 260px;
-    }
-    .toast.error { border-left-color: var(--danger); }
-    .toast.success { border-left-color: var(--success); }
-    @keyframes slideIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
-    /* ── PAGAMENTO CHECKLIST ── */
-    .pagamento-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      margin-bottom: 8px;
-      cursor: pointer;
-      transition: border-color 0.15s;
-    }
-    .pagamento-item:hover { border-color: var(--border2); }
-    .pagamento-item.selected { border-color: var(--accent); background: var(--accent-dim); }
-    .pagamento-item input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; }
-    .pagamento-item-info { flex: 1; }
-    .pagamento-item-nome { font-weight: 500; color: var(--text); font-size: 13px; }
-    .pagamento-item-det { font-size: 12px; color: var(--text3); margin-top: 2px; }
-    .pagamento-item-val { font-family: 'DM Serif Display', serif; font-size: 16px; color: var(--accent); }
-
-    /* ── RELATORIO ── */
-    .relatorio-header {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 20px;
-      align-items: flex-end;
-    }
-    .relatorio-total-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-    .divider { height: 1px; background: var(--border); margin: 20px 0; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      .main { padding: 16px; }
-      .stats-row { grid-template-columns: 1fr 1fr; }
-      .header { padding: 0 16px; }
-      .nav { padding: 0 16px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consertos · Lorena Vieira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f3ee;--card:#fff;--line:#e6e0d6;--txt:#1f1b16;--mut:#7a7166;--acc:#8a6d3b;--ok:#2f7d4f;--warn:#b7791f;--bad:#c0392b;--blue:#3b6ea8;--r:10px}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--txt);font-size:14px}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:sticky;top:0;z-index:5}
+header h1{font-size:16px;margin:0;letter-spacing:.02em}header h1 span{color:var(--mut);font-weight:400}
+nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+nav button,.btn{border:1px solid var(--line);background:var(--card);color:var(--txt);padding:8px 14px;border-radius:8px;font:inherit;cursor:pointer}
+nav button.on{background:var(--txt);color:#fff;border-color:var(--txt)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.wa{background:#25d366;border-color:#25d366;color:#fff}
+.btn.sm{padding:5px 10px;font-size:12.5px}.btn.lnk{border:none;background:none;color:var(--mut);padding:5px 6px}
+main{max-width:1100px;margin:0 auto;padding:18px}
+.page{display:none}.page.on{display:block}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px}
+.kpi b{display:block;font-size:24px}.kpi small{color:var(--mut)}
+.kpi.ok b{color:var(--ok)}.kpi.bad b{color:var(--bad)}.kpi.warn b{color:var(--warn)}
+.sec{margin-bottom:18px}.sec h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin:0 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.card .num{font-weight:700;color:var(--acc);min-width:44px}
+.card .info{flex:1;min-width:200px}.card .info b{font-size:14.5px}.card .info div{color:var(--mut);font-size:12.5px;margin-top:2px}
+.card .acoes{display:flex;gap:6px;flex-wrap:wrap}
+.tag{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11.5px;font-weight:600}
+.t-recebido{background:#eef2f8;color:var(--blue)}.t-no_conserto{background:#fdf3e2;color:var(--warn)}.t-pronto{background:#e8f5ec;color:var(--ok)}
+.t-devolvido{background:#eee;color:var(--mut)}.t-cancelado{background:#fbeaea;color:var(--bad)}.t-atraso{background:#fbeaea;color:var(--bad)}
+.vazio{color:var(--mut);padding:10px 2px;font-size:13px}
+.barra{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+input,select,textarea{font:inherit;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;width:100%}
+.barra input{flex:1;min-width:180px;width:auto}.barra select{width:auto}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-start;justify-content:center;padding:30px 12px;z-index:20;overflow:auto}
+.modal-bg.on{display:flex}.modal{background:#fff;border-radius:12px;padding:20px;width:100%;max-width:520px}
+.modal h3{margin:0 0 14px}.campo{margin-bottom:12px}.campo label{display:block;font-weight:600;font-size:12.5px;margin-bottom:4px}
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.chips button{border:1px solid var(--line);background:#faf8f4;border-radius:20px;padding:4px 10px;font-size:12px;cursor:pointer}
+.custo{border:1px dashed var(--line);border-radius:8px;padding:10px;margin-bottom:12px}
+.rodape{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}th{background:#faf8f4;font-size:11.5px;text-transform:uppercase;color:var(--mut)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--txt);color:#fff;padding:10px 16px;border-radius:8px;z-index:30;display:none}
+@media(max-width:700px){.kpis{grid-template-columns:1fr 1fr}.duas{grid-template-columns:1fr}nav{margin-left:0;width:100%}}
+</style>
 </head>
 <body>
+<header>
+  <h1>Consertos <span>· Lorena Vieira</span></h1>
+  <button class="btn pri" onclick="abrirNovo()">+ Novo conserto</button>
+  <nav>
+    <button class="on" data-p="painel">Painel</button>
+    <button data-p="todos">Todos</button>
+    <button data-p="pagamentos">Pagamentos</button>
+  </nav>
+</header>
 
-<!-- HEADER -->
-<div class="header">
-  <div class="header-brand">
-    <h1>Lorena Vieira</h1>
-    <div class="header-sep"></div>
-    <span>Consertos</span>
-  </div>
-</div>
-
-<!-- NAV -->
-<div class="nav">
-  <div class="nav-tab active" onclick="showPage('ordens')">Ordens</div>
-  <div class="nav-tab" onclick="showPage('pagamentos')">Pagamentos</div>
-  <div class="nav-tab" onclick="showPage('costureiras')">Costureiras</div>
-  <div class="nav-tab" onclick="showPage('relatorios')">Relatórios</div>
-</div>
-
-<!-- MAIN -->
-<div class="main">
-
-  <!-- ═══════════════════ ORDENS ═══════════════════ -->
-  <div class="page active" id="page-ordens">
-    <div class="stats-row" id="stats-ordens">
-      <div class="stat-card">
-        <div class="stat-label">Em Aberto</div>
-        <div class="stat-value" id="stat-abertas">—</div>
-        <div class="stat-sub">ordens ativas</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Retornadas</div>
-        <div class="stat-value" id="stat-retornadas">—</div>
-        <div class="stat-sub">aguard. pagamento</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">A Receber</div>
-        <div class="stat-value" id="stat-receber">—</div>
-        <div class="stat-sub">valor pendente</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Recebido (mês)</div>
-        <div class="stat-value" id="stat-recebido">—</div>
-        <div class="stat-sub">pagamentos no mês</div>
-      </div>
+<main>
+  <!-- PAINEL -->
+  <section class="page on" id="p-painel">
+    <div class="kpis">
+      <div class="kpi ok"><b id="k-pronto">—</b><small>prontos esperando a cliente</small></div>
+      <div class="kpi bad"><b id="k-atraso">—</b><small>atrasados</small></div>
+      <div class="kpi warn"><b id="k-andamento">—</b><small>em andamento</small></div>
+      <div class="kpi"><b id="k-mes">—</b><small>recebidos no mês</small></div>
     </div>
+    <div class="sec"><h2>Prontos — avisar e devolver</h2><div id="l-pronto"></div></div>
+    <div class="sec"><h2>Atrasados</h2><div id="l-atraso"></div></div>
+    <div class="sec"><h2>Em andamento</h2><div id="l-andamento"></div></div>
+  </section>
 
-    <div class="section-header">
-      <div>
-        <div class="section-title">Ordens de Conserto</div>
-        <div class="section-subtitle">Controle de entradas e saídas</div>
-      </div>
-      <button class="btn btn-primary" onclick="abrirModalNovaOrdem()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nova Ordem
-      </button>
-    </div>
-
-    <div class="filters-bar">
-      <input class="filter-input" type="text" placeholder="Buscar cliente..." id="filtro-cliente" oninput="filtrarOrdens()" style="width:200px" />
-      <select class="filter-input" id="filtro-status" onchange="filtrarOrdens()">
-        <option value="">Todos os status</option>
-        <option value="aberta">Abertas</option>
-        <option value="retornada">Retornadas</option>
-        <option value="paga">Pagas</option>
-        <option value="cancelada">Canceladas</option>
+  <!-- TODOS -->
+  <section class="page" id="p-todos">
+    <div class="barra">
+      <input id="busca" placeholder="Buscar por cliente, telefone, peça ou nº">
+      <select id="f-etapa">
+        <option value="">Todas as etapas</option><option value="recebido">Recebido</option><option value="no_conserto">No conserto</option>
+        <option value="pronto">Pronto</option><option value="devolvido">Devolvido</option><option value="cancelado">Cancelado</option>
       </select>
     </div>
+    <div id="l-todos"></div>
+  </section>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Cliente</th>
-            <th>Tipo de Conserto</th>
-            <th>Costureira</th>
-            <th>Entrada</th>
-            <th>Retorno Prev.</th>
-            <th>Valor</th>
-            <th>Status</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-ordens">
-          <tr class="loading-row"><td colspan="8">Carregando...</td></tr>
-        </tbody>
-      </table>
+  <!-- PAGAMENTOS -->
+  <section class="page" id="p-pagamentos">
+    <p class="vazio" style="margin-top:0">Só aparecem aqui os consertos marcados com custo (feitos por costureira paga).</p>
+    <div class="sec"><h2>A pagar</h2><div id="l-apagar"></div></div>
+    <div class="sec"><h2>Pagos (últimos 50)</h2><div id="l-pagos"></div></div>
+    <div class="sec"><h2>Costureiras</h2>
+      <div class="barra"><button class="btn sm" onclick="abrirCostureira()">+ Costureira</button></div>
+      <div id="l-costureiras"></div>
+    </div>
+  </section>
+</main>
+
+<!-- MODAL CONSERTO -->
+<div class="modal-bg" id="m-conserto"><div class="modal">
+  <h3 id="mc-titulo">Novo conserto</h3>
+  <input type="hidden" id="mc-id">
+  <div class="duas">
+    <div class="campo"><label>Cliente *</label><input id="mc-cliente" autocomplete="off"></div>
+    <div class="campo"><label>Telefone (WhatsApp)</label><input id="mc-tel" inputmode="tel" placeholder="62 99999-9999"></div>
+  </div>
+  <div class="campo"><label>Peça *</label><input id="mc-peca" placeholder="Ex.: Calça Monique preta 38"></div>
+  <div class="campo"><label>O que fazer *</label><textarea id="mc-servico" rows="2" placeholder="Ex.: barra 2 cm"></textarea>
+    <div class="chips" id="mc-chips"></div></div>
+  <div class="duas">
+    <div class="campo"><label>Entrada</label><input type="date" id="mc-entrada"></div>
+    <div class="campo"><label>Prazo para devolver *</label><input type="date" id="mc-prazo"></div>
+  </div>
+  <label style="display:flex;gap:8px;align-items:center;margin-bottom:10px;font-weight:600;font-size:13px">
+    <input type="checkbox" id="mc-temcusto" style="width:auto"> Teve custo (costureira paga)</label>
+  <div class="custo" id="mc-custo" style="display:none">
+    <div class="duas">
+      <div class="campo"><label>Costureira</label><select id="mc-costureira"><option value="">—</option></select></div>
+      <div class="campo"><label>Valor (R$)</label><input id="mc-valor" inputmode="decimal" placeholder="0,00"></div>
     </div>
   </div>
+  <div class="campo"><label>Observações</label><input id="mc-obs"></div>
+  <div class="rodape"><button class="btn" onclick="fechar('m-conserto')">Cancelar</button><button class="btn pri" id="mc-salvar" onclick="salvar()">Salvar</button></div>
+</div></div>
 
-  <!-- ═══════════════════ PAGAMENTOS ═══════════════════ -->
-  <div class="page" id="page-pagamentos">
-    <div class="section-header">
-      <div>
-        <div class="section-title">Pagamentos</div>
-        <div class="section-subtitle">Selecione as ordens retornadas para registrar pagamento</div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-bottom:20px">
-      <div style="font-size:13px; color:var(--text3); margin-bottom:16px; font-weight:500; letter-spacing:0.05em; text-transform:uppercase; font-size:11px;">
-        Ordens Retornadas · Pendentes de Pagamento
-      </div>
-      <div id="lista-pagamentos-pendentes">
-        <div class="empty-state"><h3>Carregando...</h3></div>
-      </div>
-      <div id="pagamento-footer" style="display:none; margin-top:16px; padding-top:16px; border-top:1px solid var(--border)">
-        <div style="display:flex; align-items:flex-end; gap:14px; flex-wrap:wrap">
-          <div class="form-group">
-            <label class="form-label">Data do Pagamento</label>
-            <input type="date" class="form-input" id="pag-data" style="width:170px" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Forma de Pagamento</label>
-            <select class="form-select" id="pag-forma" style="width:170px">
-              <option value="dinheiro">Dinheiro</option>
-              <option value="pix">PIX</option>
-              <option value="cartao_debito">Cartão Débito</option>
-              <option value="cartao_credito">Cartão Crédito</option>
-              <option value="outro">Outro</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">Observações</label>
-            <input type="text" class="form-input" id="pag-obs" placeholder="Opcional" style="width:200px" />
-          </div>
-          <div style="display:flex; flex-direction:column; gap:4px">
-            <div style="font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em;">Total Selecionado</div>
-            <div style="font-family:'DM Serif Display',serif; font-size:26px; color:var(--accent)" id="pag-total">R$ 0,00</div>
-          </div>
-          <button class="btn btn-primary" onclick="registrarPagamento()">Registrar Pagamento</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- PAGAMENTO COSTUREIRAS -->
-    <div class="card" style="margin-bottom:20px; margin-top:8px">
-      <div style="font-size:11px; color:var(--text3); margin-bottom:16px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;">
-        A Pagar · Costureiras
-      </div>
-      <div id="lista-pagar-costureiras">
-        <div class="empty-state"><h3>Carregando...</h3></div>
-      </div>
-    </div>
-
-    <div class="section-header" style="margin-top:24px">
-      <div>
-        <div class="section-title">Histórico de Pagamentos</div>
-      </div>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Cliente</th>
-            <th>Tipo</th>
-            <th>Data Pag.</th>
-            <th>Forma</th>
-            <th>Valor Pago</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-historico-pag">
-          <tr class="loading-row"><td colspan="6">Carregando...</td></tr>
-        </tbody>
-      </table>
-    </div>
+<!-- MODAL PAGAMENTO -->
+<div class="modal-bg" id="m-pag"><div class="modal">
+  <h3>Registrar pagamento</h3>
+  <p id="mp-resumo" class="vazio"></p>
+  <div class="duas">
+    <div class="campo"><label>Data</label><input type="date" id="mp-data"></div>
+    <div class="campo"><label>Forma</label><select id="mp-forma"><option value="pix">PIX</option><option value="dinheiro">Dinheiro</option><option value="transferencia">Transferência</option></select></div>
   </div>
+  <div class="rodape"><button class="btn" onclick="fechar('m-pag')">Cancelar</button><button class="btn ok" onclick="confirmarPagamento()">Confirmar</button></div>
+</div></div>
 
-  <!-- ═══════════════════ COSTUREIRAS ═══════════════════ -->
-  <div class="page" id="page-costureiras">
-    <div class="section-header">
-      <div>
-        <div class="section-title">Costureiras</div>
-        <div class="section-subtitle">Cadastro e gestão</div>
-      </div>
-      <button class="btn btn-primary" onclick="abrirModalCostureira()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nova Costureira
-      </button>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Nome</th>
-            <th>Telefone</th>
-            <th>Chave PIX</th>
-            <th>Status</th>
-            <th>Ações</th>
-          </tr>
-        </thead>
-        <tbody id="tbody-costureiras">
-          <tr class="loading-row"><td colspan="5">Carregando...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+<!-- MODAL COSTUREIRA -->
+<div class="modal-bg" id="m-cost"><div class="modal">
+  <h3>Costureira</h3><input type="hidden" id="ct-id">
+  <div class="campo"><label>Nome *</label><input id="ct-nome"></div>
+  <div class="duas"><div class="campo"><label>Telefone</label><input id="ct-tel"></div><div class="campo"><label>Chave PIX</label><input id="ct-pix"></div></div>
+  <div class="rodape"><button class="btn" onclick="fechar('m-cost')">Cancelar</button><button class="btn pri" onclick="salvarCostureira()">Salvar</button></div>
+</div></div>
 
-  <!-- ═══════════════════ RELATÓRIOS ═══════════════════ -->
-  <div class="page" id="page-relatorios">
-    <div class="section-header">
-      <div>
-        <div class="section-title">Relatórios</div>
-        <div class="section-subtitle">Análise de desempenho</div>
-      </div>
-    </div>
-
-    <div class="relatorio-header">
-      <div class="form-group">
-        <label class="form-label">Período Inicial</label>
-        <input type="date" class="form-input" id="rel-inicio" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Período Final</label>
-        <input type="date" class="form-input" id="rel-fim" />
-      </div>
-      <button class="btn btn-primary" onclick="gerarRelatorio()">Gerar Relatório</button>
-      <button class="btn btn-ghost" onclick="mesAtual()">Mês Atual</button>
-    </div>
-
-    <div id="relatorio-resultado" style="display:none">
-      <div class="stats-row" style="grid-template-columns: repeat(3,1fr)">
-        <div class="stat-card">
-          <div class="stat-label">Total de Ordens</div>
-          <div class="stat-value" id="rel-total-ordens">—</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Faturamento Bruto</div>
-          <div class="stat-value" id="rel-faturamento">—</div>
-          <div class="stat-sub">ordens no período</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Recebido no Período</div>
-          <div class="stat-value" id="rel-recebido">—</div>
-          <div class="stat-sub">pagamentos registrados</div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:16px">
-        <div style="font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:16px; font-weight:600">Por Tipo de Conserto</div>
-        <table style="width:100%">
-          <thead>
-            <tr>
-              <th style="background:transparent; padding:8px 12px">Tipo</th>
-              <th style="background:transparent; padding:8px 12px">Qtd</th>
-              <th style="background:transparent; padding:8px 12px">Valor Total</th>
-              <th style="background:transparent; padding:8px 12px">Ticket Médio</th>
-            </tr>
-          </thead>
-          <tbody id="rel-por-tipo"></tbody>
-        </table>
-      </div>
-
-      <div class="card" style="margin-top:16px">
-        <div style="font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:16px; font-weight:600">Por Status</div>
-        <table style="width:100%">
-          <thead>
-            <tr>
-              <th style="background:transparent; padding:8px 12px">Status</th>
-              <th style="background:transparent; padding:8px 12px">Qtd</th>
-              <th style="background:transparent; padding:8px 12px">Valor</th>
-            </tr>
-          </thead>
-          <tbody id="rel-por-status"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════ MODAL: NOVA ORDEM ═══════ -->
-<div class="modal-overlay" id="modal-ordem">
-  <div class="modal" style="width:580px">
-    <div class="modal-title" id="modal-ordem-titulo">Nova Ordem de Conserto</div>
-    <input type="hidden" id="ordem-edit-id" />
-    <div class="form-grid">
-      <div class="form-group form-full">
-        <label class="form-label">Nome da Cliente *</label>
-        <input type="text" class="form-input" id="f-cliente" placeholder="Ex: Maria da Silva" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Telefone</label>
-        <input type="text" class="form-input" id="f-telefone" placeholder="(62) 9xxxx-xxxx" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Costureira</label>
-        <select class="form-select" id="f-costureira">
-          <option value="">Sem costureira</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Data de Entrada *</label>
-        <input type="date" class="form-input" id="f-entrada" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Retorno Previsto *</label>
-        <input type="date" class="form-input" id="f-retorno" />
-      </div>
-
-      <!-- AJUSTES -->
-      <div class="form-group form-full">
-        <label class="form-label">Ajustes *</label>
-
-        <!-- Lista de ajustes adicionados -->
-        <div id="ajustes-lista" style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;"></div>
-
-        <!-- Linha para adicionar novo ajuste -->
-        <div style="display:flex; gap:8px; align-items:center">
-          <select class="form-select" id="f-tipo" style="flex:1">
-            <option value="">Selecione o ajuste...</option>
-          </select>
-          <input type="number" class="form-input" id="f-valor-item" placeholder="Valor" step="0.01" min="0" style="width:100px" />
-          <button class="btn btn-ghost" onclick="adicionarAjuste()" style="white-space:nowrap; padding:8px 14px">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Adicionar
-          </button>
-        </div>
-
-        <!-- Total dos ajustes -->
-        <div style="display:flex; justify-content:flex-end; margin-top:10px; padding-top:10px; border-top:1px solid var(--border)">
-          <div style="font-size:12px; color:var(--text3); margin-right:8px; line-height:24px">Total:</div>
-          <div style="font-family:'DM Serif Display',serif; font-size:20px; color:var(--accent)" id="f-total-ajustes">R$ 0,00</div>
-        </div>
-      </div>
-
-      <div class="form-group form-full">
-        <label class="form-label">Descrição / Detalhes</label>
-        <textarea class="form-textarea" id="f-descricao" placeholder="Informações adicionais sobre o conserto..."></textarea>
-      </div>
-      <div class="form-group form-full">
-        <label class="form-label">Observações</label>
-        <input type="text" class="form-input" id="f-obs" placeholder="Opcional" />
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="fecharModal('modal-ordem')">Cancelar</button>
-      <button class="btn btn-primary" onclick="salvarOrdem()">Salvar Ordem</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════ MODAL: COSTUREIRA ═══════ -->
-<div class="modal-overlay" id="modal-costureira">
-  <div class="modal" style="width:440px">
-    <div class="modal-title" id="modal-costureira-titulo">Nova Costureira</div>
-    <input type="hidden" id="costureira-edit-id" />
-    <div class="form-grid">
-      <div class="form-group form-full">
-        <label class="form-label">Nome *</label>
-        <input type="text" class="form-input" id="fc-nome" placeholder="Nome completo" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Telefone</label>
-        <input type="text" class="form-input" id="fc-telefone" placeholder="(62) 9xxxx-xxxx" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Chave PIX</label>
-        <input type="text" class="form-input" id="fc-pix" placeholder="CPF, e-mail ou telefone" />
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="fecharModal('modal-costureira')">Cancelar</button>
-      <button class="btn btn-primary" onclick="salvarCostureira()">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════ MODAL: REGISTRAR RETORNO ═══════ -->
-<div class="modal-overlay" id="modal-retorno">
-  <div class="modal" style="width:400px">
-    <div class="modal-title">Registrar Retorno</div>
-    <input type="hidden" id="retorno-ordem-id" />
-    <p style="color:var(--text3); font-size:13px; margin-bottom:18px">
-      Confirma que o item <strong id="retorno-cliente-nome" style="color:var(--text)"></strong> foi recebido e está pronto para entrega?
-    </p>
-    <div class="form-group">
-      <label class="form-label">Observações do Retorno</label>
-      <textarea class="form-textarea" id="retorno-obs" placeholder="Ex: Conserto concluído, aguardando cliente..."></textarea>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="fecharModal('modal-retorno')">Cancelar</button>
-      <button class="btn btn-primary" onclick="confirmarRetorno()">Confirmar Retorno</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div class="toast-container" id="toasts"></div>
+<div class="toast" id="toast"></div>
 
 <script>
 const SUPABASE_URL = 'https://lrtphrdqyeoblbwwnujv.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxydHBocmRxeWVvYmxid3dudWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDc3MDUsImV4cCI6MjA5MTEyMzcwNX0.0UbgGWrllHXWrK3AW8o4lG-OsHX8vWxI-N9PmGdjjnk';
-
-const H = { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Prefer': 'return=representation' };
-
+const H = { 'Content-Type': 'application/json', apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`, Prefer: 'return=representation' };
 async function sb(path, opts = {}) {
   const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { headers: H, ...opts });
   if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.message || r.status); }
-  if (r.status === 204) return null;
-  return r.json();
+  return r.status === 204 ? null : r.json();
 }
 
-// Estado
-let todasOrdens = [];
-let tiposConserto = [];
-let ordensSelecionadas = new Set();
-let todasCostureiras = [];
+const SERVICOS = ['Barra', 'Ajuste de cintura', 'Ajuste de cós', 'Pence', 'Trocar zíper', 'Botão', 'Costura soltou'];
+const ETAPAS = { recebido: 'Recebido', no_conserto: 'No conserto', pronto: 'Pronto', devolvido: 'Devolvido', cancelado: 'Cancelado' };
+// Status antigo (exigido pelo banco) correspondente a cada etapa nova
+const STATUS_LEGADO = { recebido: 'aberta', no_conserto: 'aberta', pronto: 'retornada', devolvido: 'retornada', cancelado: 'cancelada' };
 
-// ═══ INIT ═══
-document.addEventListener('DOMContentLoaded', () => {
-  const hoje = new Date().toISOString().split('T')[0];
-  document.getElementById('f-entrada').value = hoje;
-  document.getElementById('pag-data').value = hoje;
-  carregarTipos();
-  carregarCostureiras();
-  carregarOrdens();
-  document.getElementById('f-valor-item').addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); adicionarAjuste(); }
-  });
-  const ini = new Date(); ini.setDate(1);
-  const fim = new Date(ini.getFullYear(), ini.getMonth() + 1, 0);
-  document.getElementById('rel-inicio').value = ini.toISOString().split('T')[0];
-  document.getElementById('rel-fim').value = fim.toISOString().split('T')[0];
+let ORDENS = [], COSTUREIRAS = [], PAGOS = new Map(), pagarIds = [];
+
+const hoje = () => new Date().toLocaleDateString('sv-SE');
+const somaDias = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toLocaleDateString('sv-SE'); };
+const fData = (d) => d ? new Date(String(d).slice(0, 10) + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : '—';
+const fBRL = (v) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function toast(m) { const t = document.getElementById('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 3000); }
+function abrir(id) { document.getElementById(id).classList.add('on'); }
+function fechar(id) { document.getElementById(id).classList.remove('on'); }
+
+// Ordens antigas não têm "etapa": deduz pelo status antigo.
+function etapaDe(o) {
+  if (o.etapa) return o.etapa;
+  return { aberta: 'no_conserto', retornada: 'pronto', paga: 'devolvido', cancelada: 'cancelado' }[o.status] || 'recebido';
+}
+const temCusto = (o) => o.tem_custo ?? Number(o.valor) > 0;
+const atrasado = (o) => ['recebido', 'no_conserto'].includes(etapaDe(o)) && o.data_retorno_previsto && o.data_retorno_previsto < hoje();
+
+/* --------------------------- carregar --------------------------- */
+async function carregar() {
+  try {
+    const [ordens, cost, pags] = await Promise.all([
+      sb('consertos_ordens?select=*&order=created_at.desc'),
+      sb('consertos_costureiras?select=*&order=nome'),
+      sb('consertos_pagamentos?select=*&order=data_pagamento.desc'),
+    ]);
+    ORDENS = ordens; COSTUREIRAS = cost;
+    PAGOS = new Map(pags.map((p) => [p.ordem_id, p]));
+    render();
+  } catch (e) { toast('Erro ao carregar: ' + e.message); }
+}
+
+/* --------------------------- painel --------------------------- */
+function cartao(o) {
+  const et = etapaDe(o);
+  const cost = COSTUREIRAS.find((c) => c.id === o.costureira_id);
+  const tel = (o.telefone || '').replace(/\D/g, '');
+  const botoes = [];
+  if (et === 'recebido') botoes.push(`<button class="btn sm" onclick="mover('${o.id}','no_conserto')">Enviar p/ conserto</button>`);
+  if (et === 'recebido' || et === 'no_conserto') botoes.push(`<button class="btn sm ok" onclick="mover('${o.id}','pronto')">Ficou pronto</button>`);
+  if (et === 'pronto') {
+    if (tel) botoes.push(`<button class="btn sm wa" onclick="avisar('${o.id}')">${o.avisado_em ? 'Avisar de novo' : 'Avisar no WhatsApp'}</button>`);
+    botoes.push(`<button class="btn sm ok" onclick="mover('${o.id}','devolvido')">Devolvido</button>`);
+  }
+  if (et !== 'devolvido' && et !== 'cancelado') botoes.push(`<button class="btn sm lnk" onclick="editar('${o.id}')">Editar</button>`);
+  const extra = [
+    o.peca ? esc(o.peca) : '',
+    esc(o.descricao || o.tipo_conserto || ''),
+    `entrou ${fData(o.data_entrada)} · prazo ${fData(o.data_retorno_previsto)}`,
+    et === 'pronto' && o.avisado_em ? `avisada ${fData(o.avisado_em)}` : '',
+    temCusto(o) ? `${cost ? esc(cost.nome) + ' · ' : ''}${fBRL(o.valor)}${PAGOS.has(o.id) ? ' (pago)' : ''}` : '',
+  ].filter(Boolean).join(' · ');
+  return `<div class="card">
+    <span class="num">#${o.numero_ordem ?? ''}</span>
+    <div class="info"><b>${esc(o.nome_cliente)}</b> ${o.telefone ? `<span style="color:var(--mut);font-size:12px">${esc(o.telefone)}</span>` : ''}
+      <span class="tag t-${et}">${ETAPAS[et]}</span>${atrasado(o) ? ' <span class="tag t-atraso">atrasado</span>' : ''}
+      <div>${extra}</div></div>
+    <div class="acoes">${botoes.join('')}</div></div>`;
+}
+const lista = (id, arr, vazio) => { document.getElementById(id).innerHTML = arr.length ? arr.map(cartao).join('') : `<div class="vazio">${vazio}</div>`; };
+
+function render() {
+  const abertas = ORDENS.filter((o) => !['devolvido', 'cancelado'].includes(etapaDe(o)));
+  const prontos = abertas.filter((o) => etapaDe(o) === 'pronto');
+  const atrasados = abertas.filter(atrasado);
+  const andamento = abertas.filter((o) => etapaDe(o) !== 'pronto' && !atrasado(o));
+  const mes = hoje().slice(0, 7);
+  document.getElementById('k-pronto').textContent = prontos.length;
+  document.getElementById('k-atraso').textContent = atrasados.length;
+  document.getElementById('k-andamento').textContent = andamento.length + atrasados.length;
+  document.getElementById('k-mes').textContent = ORDENS.filter((o) => (o.data_entrada || '').startsWith(mes)).length;
+  lista('l-pronto', prontos, 'Nenhum conserto pronto esperando a cliente.');
+  lista('l-atraso', atrasados, 'Nada atrasado.');
+  lista('l-andamento', andamento, 'Nenhum conserto em andamento.');
+  renderTodos(); renderPagamentos();
+}
+
+function renderTodos() {
+  const q = document.getElementById('busca').value.toLowerCase().trim();
+  const f = document.getElementById('f-etapa').value;
+  const arr = ORDENS.filter((o) => (!f || etapaDe(o) === f) &&
+    (!q || [o.nome_cliente, o.telefone, o.peca, o.descricao, o.tipo_conserto, String(o.numero_ordem)].some((x) => String(x || '').toLowerCase().includes(q))));
+  lista('l-todos', arr, 'Nenhum conserto encontrado.');
+}
+
+/* --------------------------- ações --------------------------- */
+async function atualizar(id, campos) {
+  await sb(`consertos_ordens?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ ...campos, updated_at: new Date().toISOString() }) });
+}
+async function mover(id, etapa) {
+  const o = ORDENS.find((x) => x.id === id);
+  if (etapa === 'devolvido' && !confirm(`Confirmar que ${o.nome_cliente} retirou a peça?`)) return;
+  const campos = { etapa, status: PAGOS.has(id) ? 'paga' : STATUS_LEGADO[etapa] };
+  if (etapa === 'pronto') campos.pronto_em = new Date().toISOString();
+  if (etapa === 'devolvido') campos.devolvido_em = new Date().toISOString();
+  try { await atualizar(id, campos); toast(ETAPAS[etapa]); await carregar(); } catch (e) { toast('Erro: ' + e.message); }
+}
+async function avisar(id) {
+  const o = ORDENS.find((x) => x.id === id);
+  let tel = (o.telefone || '').replace(/\D/g, '');
+  if (tel.length <= 11) tel = '55' + tel;
+  const nome = (o.nome_cliente || '').split(' ')[0];
+  const msg = `Olá ${nome}! Aqui é do Studio Lorena Vieira. Seu conserto${o.peca ? ' (' + o.peca + ')' : ''} já está pronto para retirada na loja. Te esperamos! 💛`;
+  window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`, '_blank');
+  try { await atualizar(id, { avisado_em: new Date().toISOString() }); await carregar(); } catch (e) { /* aviso já aberto */ }
+}
+
+/* --------------------------- modal conserto --------------------------- */
+document.getElementById('mc-chips').innerHTML = SERVICOS.map((s) => `<button type="button">${s}</button>`).join('');
+document.getElementById('mc-chips').addEventListener('click', (e) => {
+  if (e.target.tagName !== 'BUTTON') return;
+  const t = document.getElementById('mc-servico');
+  t.value = t.value ? `${t.value}, ${e.target.textContent.toLowerCase()}` : e.target.textContent;
+  t.focus();
 });
+document.getElementById('mc-temcusto').addEventListener('change', (e) => { document.getElementById('mc-custo').style.display = e.target.checked ? 'block' : 'none'; });
 
-// ═══ TOAST ═══
-function toast(msg, tipo = '') {
-  const t = document.getElementById('toasts');
-  const d = document.createElement('div');
-  d.className = `toast ${tipo}`;
-  d.textContent = msg;
-  t.appendChild(d);
-  setTimeout(() => d.remove(), 3500);
+function preencherCostureiras(sel) {
+  document.getElementById('mc-costureira').innerHTML = '<option value="">—</option>' +
+    COSTUREIRAS.filter((c) => c.ativo || c.id === sel).map((c) => `<option value="${c.id}">${esc(c.nome)}</option>`).join('');
+  document.getElementById('mc-costureira').value = sel || '';
 }
-
-// ═══ NAVIGATE ═══
-function showPage(p) {
-  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(x => x.classList.remove('active'));
-  document.getElementById(`page-${p}`).classList.add('active');
-  event.currentTarget.classList.add('active');
-  if (p === 'pagamentos') carregarPagamentosPage();
-  if (p === 'costureiras') renderTabelaCostureiras();
+function abrirNovo() {
+  document.getElementById('mc-titulo').textContent = 'Novo conserto';
+  ['mc-id', 'mc-cliente', 'mc-tel', 'mc-peca', 'mc-servico', 'mc-valor', 'mc-obs'].forEach((i) => document.getElementById(i).value = '');
+  document.getElementById('mc-entrada').value = hoje();
+  document.getElementById('mc-prazo').value = somaDias(7);
+  document.getElementById('mc-temcusto').checked = false;
+  document.getElementById('mc-custo').style.display = 'none';
+  preencherCostureiras('');
+  abrir('m-conserto');
+  setTimeout(() => document.getElementById('mc-cliente').focus(), 50);
 }
-
-// ═══ COSTUREIRAS ═══
-async function carregarCostureiras() {
-  try {
-    todasCostureiras = await sb('consertos_costureiras?select=*&order=nome');
-    popularSelectCostureira();
-  } catch(e) { console.error('Erro costureiras:', e); }
+function editar(id) {
+  const o = ORDENS.find((x) => x.id === id);
+  document.getElementById('mc-titulo').textContent = `Editar conserto #${o.numero_ordem ?? ''}`;
+  document.getElementById('mc-id').value = id;
+  document.getElementById('mc-cliente').value = o.nome_cliente || '';
+  document.getElementById('mc-tel').value = o.telefone || '';
+  document.getElementById('mc-peca').value = o.peca || '';
+  document.getElementById('mc-servico').value = o.descricao || o.tipo_conserto || '';
+  document.getElementById('mc-entrada').value = o.data_entrada || hoje();
+  document.getElementById('mc-prazo').value = o.data_retorno_previsto || somaDias(7);
+  document.getElementById('mc-obs').value = o.observacoes || '';
+  const custo = temCusto(o);
+  document.getElementById('mc-temcusto').checked = custo;
+  document.getElementById('mc-custo').style.display = custo ? 'block' : 'none';
+  document.getElementById('mc-valor').value = custo ? String(o.valor).replace('.', ',') : '';
+  preencherCostureiras(o.costureira_id);
+  abrir('m-conserto');
 }
-
-function popularSelectCostureira() {
-  const sel = document.getElementById('f-costureira');
-  // Limpa opções antigas (mantém a primeira "Sem costureira")
-  while (sel.options.length > 1) sel.remove(1);
-  todasCostureiras.filter(c => c.ativo).forEach(c => {
-    const o = document.createElement('option');
-    o.value = c.id; o.textContent = c.nome;
-    sel.appendChild(o);
-  });
-}
-
-function renderTabelaCostureiras() {
-  const tb = document.getElementById('tbody-costureiras');
-  if (!todasCostureiras.length) {
-    tb.innerHTML = `<tr><td colspan="5"><div class="empty-state"><h3>Nenhuma costureira cadastrada</h3></div></td></tr>`;
-    return;
-  }
-  tb.innerHTML = todasCostureiras.map(c => `<tr>
-    <td><strong>${c.nome}</strong></td>
-    <td>${c.telefone || '—'}</td>
-    <td style="font-size:12px; color:var(--text3)">${c.chave_pix || '—'}</td>
-    <td>${c.ativo ? '<span class="badge badge-paga">Ativa</span>' : '<span class="badge badge-cancelada">Inativa</span>'}</td>
-    <td>
-      <div style="display:flex;gap:6px">
-        <button class="btn btn-ghost btn-sm" onclick="editarCostureira('${c.id}')">Editar</button>
-        <button class="btn btn-danger btn-sm" onclick="toggleAtivoCostureira('${c.id}', ${c.ativo})">${c.ativo ? 'Desativar' : 'Ativar'}</button>
-      </div>
-    </td>
-  </tr>`).join('');
-}
-
-function abrirModalCostureira() {
-  document.getElementById('modal-costureira-titulo').textContent = 'Nova Costureira';
-  document.getElementById('costureira-edit-id').value = '';
-  ['fc-nome','fc-telefone','fc-pix'].forEach(id => document.getElementById(id).value = '');
-  abrirModal('modal-costureira');
-}
-
-function editarCostureira(id) {
-  const c = todasCostureiras.find(x => x.id === id);
-  if (!c) return;
-  document.getElementById('modal-costureira-titulo').textContent = 'Editar Costureira';
-  document.getElementById('costureira-edit-id').value = id;
-  document.getElementById('fc-nome').value = c.nome;
-  document.getElementById('fc-telefone').value = c.telefone || '';
-  document.getElementById('fc-pix').value = c.chave_pix || '';
-  abrirModal('modal-costureira');
-}
-
-async function salvarCostureira() {
-  const nome = document.getElementById('fc-nome').value.trim();
-  if (!nome) { toast('Informe o nome.', 'error'); return; }
-  const payload = {
-    nome,
-    telefone: document.getElementById('fc-telefone').value.trim() || null,
-    chave_pix: document.getElementById('fc-pix').value.trim() || null,
+async function salvar() {
+  const v = (i) => document.getElementById(i).value.trim();
+  if (!v('mc-cliente') || !v('mc-peca') || !v('mc-servico') || !v('mc-prazo')) { toast('Preencha cliente, peça, o que fazer e prazo.'); return; }
+  const custo = document.getElementById('mc-temcusto').checked;
+  const valor = custo ? Number(v('mc-valor').replace(/\./g, '').replace(',', '.')) || 0 : 0;
+  const dados = {
+    nome_cliente: v('mc-cliente'), telefone: v('mc-tel') || null, peca: v('mc-peca'),
+    descricao: v('mc-servico'), tipo_conserto: v('mc-servico').slice(0, 120),
+    data_entrada: v('mc-entrada') || hoje(), data_retorno_previsto: v('mc-prazo'),
+    observacoes: v('mc-obs') || null, tem_custo: custo, valor,
+    costureira_id: custo ? (document.getElementById('mc-costureira').value || null) : null,
   };
-  const editId = document.getElementById('costureira-edit-id').value;
+  const id = v('mc-id');
+  const btn = document.getElementById('mc-salvar'); btn.disabled = true;
   try {
-    if (editId) {
-      await sb(`consertos_costureiras?id=eq.${editId}`, { method: 'PATCH', body: JSON.stringify(payload) });
-      toast('Costureira atualizada.', 'success');
-    } else {
-      await sb('consertos_costureiras', { method: 'POST', body: JSON.stringify({ ...payload, ativo: true }) });
-      toast('Costureira cadastrada!', 'success');
+    if (id) { await atualizar(id, dados); toast('Conserto atualizado.'); }
+    else {
+      const [novo] = await sb('consertos_ordens', { method: 'POST', body: JSON.stringify({ ...dados, etapa: 'recebido', status: 'aberta' }) });
+      toast(`Conserto #${novo.numero_ordem} registrado — anote o número na etiqueta da peça.`);
     }
-    fecharModal('modal-costureira');
-    await carregarCostureiras();
-    renderTabelaCostureiras();
-  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+    fechar('m-conserto'); await carregar();
+  } catch (e) { toast('Erro ao salvar: ' + e.message); }
+  btn.disabled = false;
 }
 
-async function toggleAtivoCostureira(id, atual) {
-  try {
-    await sb(`consertos_costureiras?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ ativo: !atual }) });
-    toast(!atual ? 'Costureira ativada.' : 'Costureira desativada.', 'success');
-    await carregarCostureiras();
-    renderTabelaCostureiras();
-  } catch(e) { toast('Erro: ' + e.message, 'error'); }
-}
-
-// ═══ TIPOS (hardcoded com preços) ═══
-const TIPOS_CONSERTO = [
-  { nome: 'Barra Simples',                valor: 30.00 },
-  { nome: 'Barra Elaborada',              valor: 40.00 },
-  { nome: 'Ajuste Cintura Simples',       valor: 30.00 },
-  { nome: 'Ajuste Cintura Elaborada',     valor: 40.00 },
-  { nome: 'Ajuste Cint. Cós Tradicional', valor: 30.00 },
-  { nome: 'Ajuste Cint. Cós Elaborado',   valor: 40.00 },
-  { nome: 'Pence',                        valor: 15.00 },
-  { nome: 'Outros',                       valor: null  },
-];
-
-function carregarTipos() {
-  const sel = document.getElementById('f-tipo');
-  TIPOS_CONSERTO.forEach(t => {
-    const o = document.createElement('option');
-    o.value = t.nome;
-    o.textContent = t.valor !== null
-      ? `${t.nome} — R$ ${t.valor.toFixed(2).replace('.',',')}`
-      : t.nome;
-    o.dataset.valor = t.valor !== null ? t.valor : '';
-    sel.appendChild(o);
-  });
-  // Auto-preenche valor ao selecionar tipo
-  sel.addEventListener('change', () => {
-    const opt = sel.options[sel.selectedIndex];
-    const v = opt?.dataset.valor;
-    const campo = document.getElementById('f-valor-item');
-    if (v !== undefined && v !== '') {
-      campo.value = v;
-    } else {
-      campo.value = '';
-      if (opt?.value) campo.focus();
-    }
-  });
-}
-
-// ═══ ORDENS ═══
-async function carregarOrdens() {
-  try {
-    todasOrdens = await sb('consertos_ordens?select=*&order=created_at.desc');
-    renderOrdens(todasOrdens);
-    calcularStats(todasOrdens);
-  } catch(e) {
-    toast('Erro ao carregar ordens: ' + e.message, 'error');
-    document.getElementById('tbody-ordens').innerHTML = `<tr class="loading-row"><td colspan="8">Erro ao conectar. Verifique a rede.</td></tr>`;
-  }
-}
-
-function calcularStats(ordens) {
-  const abertas = ordens.filter(o => o.status === 'aberta').length;
-  const retornadas = ordens.filter(o => o.status === 'retornada').length;
-  const aReceber = ordens.filter(o => ['aberta','retornada'].includes(o.status)).reduce((s,o) => s + Number(o.valor), 0);
-  // recebido no mês
-  carregarRecebidoMes().then(v => {
-    document.getElementById('stat-recebido').textContent = fmtMoeda(v);
-  });
-  document.getElementById('stat-abertas').textContent = abertas;
-  document.getElementById('stat-retornadas').textContent = retornadas;
-  document.getElementById('stat-receber').textContent = fmtMoeda(aReceber);
-}
-
-async function carregarRecebidoMes() {
-  const ini = new Date(); ini.setDate(1);
-  const fim = new Date(ini.getFullYear(), ini.getMonth()+1, 0);
-  try {
-    const r = await sb(`consertos_pagamentos?select=valor_pago&data_pagamento=gte.${ini.toISOString().split('T')[0]}&data_pagamento=lte.${fim.toISOString().split('T')[0]}`);
-    return r.reduce((s,p) => s + Number(p.valor_pago), 0);
-  } catch { return 0; }
-}
-
-function renderOrdens(lista) {
-  const tb = document.getElementById('tbody-ordens');
-  if (!lista.length) {
-    tb.innerHTML = `<tr><td colspan="8"><div class="empty-state"><h3>Nenhuma ordem encontrada</h3><p>Clique em "Nova Ordem" para começar.</p></div></td></tr>`;
-    return;
-  }
-  tb.innerHTML = lista.map(o => {
-    const atrasada = o.status === 'aberta' && o.data_retorno_previsto < new Date().toISOString().split('T')[0];
-    const costureira = todasCostureiras.find(c => c.id === o.costureira_id);
-    return `<tr>
-      <td style="color:var(--text3); font-size:12px">#${o.numero_ordem || '—'}</td>
-      <td><strong>${o.nome_cliente}</strong>${o.telefone ? `<div style="font-size:11px;color:var(--text3)">${o.telefone}</div>` : ''}</td>
-      <td>${o.tipo_conserto}</td>
-      <td style="font-size:12px; color:var(--text2)">${costureira ? costureira.nome : '<span style="color:var(--text3)">—</span>'}</td>
-      <td>${fmtData(o.data_entrada)}</td>
-      <td style="${atrasada ? 'color:var(--danger)' : ''}">${fmtData(o.data_retorno_previsto)}${atrasada ? ' ⚠' : ''}</td>
-      <td style="font-family:'DM Serif Display',serif; color:var(--accent)">${fmtMoeda(o.valor)}</td>
-      <td>${badgeStatus(o.status)}</td>
-      <td>
-        <div style="display:flex;gap:6px">
-          ${o.status === 'aberta' ? `<button class="btn btn-ghost btn-sm" onclick="abrirRetorno('${o.id}','${escHtml(o.nome_cliente)}')">Retorno</button>` : ''}
-          <button class="btn btn-ghost btn-sm" onclick="editarOrdem('${o.id}')">Editar</button>
-          ${o.status !== 'paga' ? `<button class="btn btn-danger btn-sm" onclick="cancelarOrdem('${o.id}')">✕</button>` : ''}
-        </div>
-      </td>
-    </tr>`;
-  }).join('');
-}
-
-function filtrarOrdens() {
-  const q = document.getElementById('filtro-cliente').value.toLowerCase();
-  const s = document.getElementById('filtro-status').value;
-  const f = todasOrdens.filter(o =>
-    (!q || o.nome_cliente.toLowerCase().includes(q)) &&
-    (!s || o.status === s)
-  );
-  renderOrdens(f);
-}
-
-// ═══ AJUSTES (estado local do modal) ═══
-let ajustesAtivos = []; // [{nome, valor}]
-
-function renderAjustes() {
-  const lista = document.getElementById('ajustes-lista');
-  if (!ajustesAtivos.length) {
-    lista.innerHTML = `<div style="font-size:12px; color:var(--text3); padding:4px 0">Nenhum ajuste adicionado ainda.</div>`;
-  } else {
-    lista.innerHTML = ajustesAtivos.map((a, i) => `
-      <div class="ajuste-item">
-        <span class="ajuste-item-nome">${a.nome}</span>
-        <span class="ajuste-item-val">${fmtMoeda(a.valor)}</span>
-        <button class="ajuste-item-rm" onclick="removerAjuste(${i})" title="Remover">×</button>
-      </div>
-    `).join('');
-  }
-  const total = ajustesAtivos.reduce((s, a) => s + a.valor, 0);
-  document.getElementById('f-total-ajustes').textContent = fmtMoeda(total);
-}
-
-function adicionarAjuste() {
-  const sel = document.getElementById('f-tipo');
-  const nome = sel.value;
-  const valor = parseFloat(document.getElementById('f-valor-item').value);
-  if (!nome) { toast('Selecione o tipo de ajuste.', 'error'); return; }
-  if (isNaN(valor) || valor <= 0) { toast('Informe um valor válido.', 'error'); return; }
-  ajustesAtivos.push({ nome, valor });
-  renderAjustes();
-  // Limpar campos para próximo ajuste
-  sel.value = '';
-  document.getElementById('f-valor-item').value = '';
-  sel.focus();
-}
-
-function removerAjuste(idx) {
-  ajustesAtivos.splice(idx, 1);
-  renderAjustes();
-}
-
-// ═══ MODAL ORDEM ═══
-function abrirModalNovaOrdem() {
-  document.getElementById('modal-ordem-titulo').textContent = 'Nova Ordem de Conserto';
-  document.getElementById('ordem-edit-id').value = '';
-  ['f-cliente','f-telefone','f-descricao','f-obs'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('f-tipo').value = '';
-  document.getElementById('f-valor-item').value = '';
-  document.getElementById('f-costureira').value = '';
-  ajustesAtivos = [];
-  renderAjustes();
-  const hoje = new Date().toISOString().split('T')[0];
-  document.getElementById('f-entrada').value = hoje;
-  const ret = new Date(); ret.setDate(ret.getDate() + 7);
-  document.getElementById('f-retorno').value = ret.toISOString().split('T')[0];
-  abrirModal('modal-ordem');
-}
-
-function editarOrdem(id) {
-  const o = todasOrdens.find(x => x.id === id);
-  if (!o) return;
-  document.getElementById('modal-ordem-titulo').textContent = 'Editar Ordem';
-  document.getElementById('ordem-edit-id').value = id;
-  document.getElementById('f-cliente').value = o.nome_cliente;
-  document.getElementById('f-telefone').value = o.telefone || '';
-  document.getElementById('f-descricao').value = o.descricao || '';
-  document.getElementById('f-obs').value = o.observacoes || '';
-  document.getElementById('f-entrada').value = o.data_entrada;
-  document.getElementById('f-retorno').value = o.data_retorno_previsto;
-  document.getElementById('f-costureira').value = o.costureira_id || '';
-  document.getElementById('f-tipo').value = '';
-  document.getElementById('f-valor-item').value = '';
-  // Reconstruir ajustes a partir do tipo_conserto e valor salvo
-  // Formato salvo: "Tipo A + Tipo B" com valor total
-  // Para edição, colocamos como um único item com o valor total
-  const tipos = o.tipo_conserto.split(' + ');
-  const valorTotal = Number(o.valor);
-  if (tipos.length === 1) {
-    ajustesAtivos = [{ nome: tipos[0], valor: valorTotal }];
-  } else {
-    // Múltiplos: tentamos reconstruir pelo preço padrão; resto vai pro último
-    let somaConhecida = 0;
-    const itens = tipos.map((nome, i) => {
-      const tp = TIPOS_CONSERTO.find(t => t.nome === nome);
-      const v = (tp && tp.valor !== null) ? tp.valor : null;
-      if (v !== null) somaConhecida += v;
-      return { nome, valor: v };
-    });
-    // Se a soma bate, usa os valores conhecidos; senão distribui igualmente
-    if (Math.abs(somaConhecida - valorTotal) < 0.01) {
-      ajustesAtivos = itens.map(it => ({ nome: it.nome, valor: it.valor ?? 0 }));
-    } else {
-      const parcela = valorTotal / tipos.length;
-      ajustesAtivos = tipos.map(nome => ({ nome, valor: Math.round(parcela * 100) / 100 }));
-    }
-  }
-  renderAjustes();
-  abrirModal('modal-ordem');
-}
-
-async function salvarOrdem() {
-  const cliente = document.getElementById('f-cliente').value.trim();
-  const entrada = document.getElementById('f-entrada').value;
-  const retorno = document.getElementById('f-retorno').value;
-  if (!cliente) { toast('Informe o nome da cliente.', 'error'); return; }
-  if (!entrada || !retorno) { toast('Informe as datas.', 'error'); return; }
-  if (!ajustesAtivos.length) { toast('Adicione ao menos um ajuste.', 'error'); return; }
-
-  const tipo_conserto = ajustesAtivos.map(a => a.nome).join(' + ');
-  const valor = ajustesAtivos.reduce((s, a) => s + a.valor, 0);
-
-  const costureira_id = document.getElementById('f-costureira').value || null;
-  const payload = {
-    nome_cliente: cliente,
-    telefone: document.getElementById('f-telefone').value.trim() || null,
-    tipo_conserto,
-    costureira_id,
-    descricao: document.getElementById('f-descricao').value.trim() || null,
-    valor,
-    data_entrada: entrada,
-    data_retorno_previsto: retorno,
-    observacoes: document.getElementById('f-obs').value.trim() || null,
-    updated_at: new Date().toISOString()
-  };
-  const editId = document.getElementById('ordem-edit-id').value;
-  try {
-    if (editId) {
-      await sb(`consertos_ordens?id=eq.${editId}`, { method: 'PATCH', body: JSON.stringify(payload) });
-      toast('Ordem atualizada.', 'success');
-    } else {
-      await sb('consertos_ordens', { method: 'POST', body: JSON.stringify(payload) });
-      toast('Ordem criada com sucesso!', 'success');
-    }
-    fecharModal('modal-ordem');
-    carregarOrdens();
-  } catch(e) { toast('Erro ao salvar: ' + e.message, 'error'); }
-}
-
-// ═══ RETORNO ═══
-function abrirRetorno(id, nome) {
-  document.getElementById('retorno-ordem-id').value = id;
-  document.getElementById('retorno-cliente-nome').textContent = nome;
-  document.getElementById('retorno-obs').value = '';
-  abrirModal('modal-retorno');
-}
-
-async function confirmarRetorno() {
-  const id = document.getElementById('retorno-ordem-id').value;
-  const obs = document.getElementById('retorno-obs').value.trim();
-  try {
-    const payload = { status: 'retornada', updated_at: new Date().toISOString() };
-    if (obs) payload.observacoes = obs;
-    await sb(`consertos_ordens?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify(payload) });
-    toast('Retorno registrado! Pronto para pagamento.', 'success');
-    fecharModal('modal-retorno');
-    carregarOrdens();
-  } catch(e) { toast('Erro: ' + e.message, 'error'); }
-}
-
-// ═══ CANCELAR ═══
-async function cancelarOrdem(id) {
-  if (!confirm('Cancelar esta ordem?')) return;
-  try {
-    await sb(`consertos_ordens?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'cancelada', updated_at: new Date().toISOString() }) });
-    toast('Ordem cancelada.', '');
-    carregarOrdens();
-  } catch(e) { toast('Erro: ' + e.message, 'error'); }
-}
-
-// ═══ PAGAMENTOS PAGE ═══
-async function carregarPagamentosPage() {
-  renderPendentesPagamento();
-  renderPagarCostureiras();
-  carregarHistoricoPagamentos();
-}
-
-function renderPagarCostureiras() {
-  // Ordens retornadas ou pagas que têm costureira e ainda não foram pagas à costureira
-  // Para simplificar: ordens com status 'retornada' que têm costureira_id
-  const comCostureira = todasOrdens.filter(o =>
-    o.costureira_id && ['retornada', 'paga'].includes(o.status)
-  );
-  const div = document.getElementById('lista-pagar-costureiras');
-  if (!comCostureira.length) {
-    div.innerHTML = `<p style="color:var(--text3); font-size:13px">Nenhuma ordem com costureira atribuída no momento.</p>`;
-    return;
-  }
-  // Agrupar por costureira
+/* --------------------------- pagamentos --------------------------- */
+function renderPagamentos() {
+  const comCusto = ORDENS.filter((o) => temCusto(o) && etapaDe(o) !== 'cancelado');
+  const aPagar = comCusto.filter((o) => !PAGOS.has(o.id) && ['pronto', 'devolvido'].includes(etapaDe(o)));
   const grupos = {};
-  comCostureira.forEach(o => {
-    if (!grupos[o.costureira_id]) grupos[o.costureira_id] = [];
-    grupos[o.costureira_id].push(o);
-  });
-  div.innerHTML = Object.entries(grupos).map(([cid, ordens]) => {
-    const costureira = todasCostureiras.find(c => c.id === cid);
-    const total = ordens.reduce((s, o) => s + Number(o.valor), 0);
-    return `
-      <div style="background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:10px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
-          <div>
-            <div style="font-weight:600; color:var(--text); font-size:14px">${costureira?.nome || '—'}</div>
-            ${costureira?.chave_pix ? `<div style="font-size:11px; color:var(--text3); margin-top:2px">PIX: ${costureira.chave_pix}</div>` : ''}
-          </div>
-          <div style="text-align:right">
-            <div style="font-size:11px; color:var(--text3); text-transform:uppercase; letter-spacing:0.06em">${ordens.length} conserto(s)</div>
-            <div style="font-family:'DM Serif Display',serif; font-size:20px; color:var(--accent)">${fmtMoeda(total)}</div>
-          </div>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:4px">
-          ${ordens.map(o => `
-            <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text3); padding:4px 0; border-top:1px solid var(--border)">
-              <span>${o.nome_cliente} · ${o.tipo_conserto}</span>
-              <span style="color:var(--text2)">${fmtMoeda(o.valor)} · ${badgeStatus(o.status)}</span>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }).join('');
-}
+  aPagar.forEach((o) => { (grupos[o.costureira_id || '-'] ||= []).push(o); });
+  document.getElementById('l-apagar').innerHTML = Object.keys(grupos).length ? Object.entries(grupos).map(([cid, ords]) => {
+    const c = COSTUREIRAS.find((x) => x.id === cid);
+    const total = ords.reduce((s, o) => s + Number(o.valor), 0);
+    return `<div class="card"><div class="info"><b>${c ? esc(c.nome) : 'Sem costureira'}</b>${c?.chave_pix ? ` <span style="color:var(--mut);font-size:12px">PIX: ${esc(c.chave_pix)}</span>` : ''}
+      <div>${ords.map((o) => `#${o.numero_ordem} ${esc(o.nome_cliente)} (${fBRL(o.valor)})`).join(' · ')}</div></div>
+      <b>${fBRL(total)}</b><button class="btn sm ok" onclick="pagar('${ords.map((o) => o.id).join(',')}')">Pagar</button></div>`;
+  }).join('') : '<div class="vazio">Nada a pagar.</div>';
 
-function renderPendentesPagamento() {
-  const pendentes = todasOrdens.filter(o => o.status === 'retornada');
-  const lista = document.getElementById('lista-pagamentos-pendentes');
-  ordensSelecionadas.clear();
-  atualizarTotalPag();
-  if (!pendentes.length) {
-    lista.innerHTML = `<div class="empty-state"><h3>Nenhuma ordem retornada pendente</h3><p>Registre o retorno nas ordens abertas primeiro.</p></div>`;
-    document.getElementById('pagamento-footer').style.display = 'none';
-    return;
-  }
-  document.getElementById('pagamento-footer').style.display = 'flex';
-  lista.innerHTML = pendentes.map(o => `
-    <div class="pagamento-item" id="pitem-${o.id}" onclick="togglePagItem('${o.id}', ${o.valor})">
-      <input type="checkbox" id="chk-${o.id}" />
-      <div class="pagamento-item-info">
-        <div class="pagamento-item-nome">${o.nome_cliente}</div>
-        <div class="pagamento-item-det">${o.tipo_conserto} · Entrada: ${fmtData(o.data_entrada)}</div>
-      </div>
-      <div class="pagamento-item-val">${fmtMoeda(o.valor)}</div>
-    </div>
-  `).join('');
-}
+  const pagos = comCusto.filter((o) => PAGOS.has(o.id)).sort((a, b) => (PAGOS.get(b.id).data_pagamento || '').localeCompare(PAGOS.get(a.id).data_pagamento || '')).slice(0, 50);
+  document.getElementById('l-pagos').innerHTML = pagos.length ? `<table><thead><tr><th>Nº</th><th>Cliente</th><th>Costureira</th><th>Pago em</th><th>Valor</th></tr></thead><tbody>${pagos.map((o) => {
+    const p = PAGOS.get(o.id); const c = COSTUREIRAS.find((x) => x.id === o.costureira_id);
+    return `<tr><td>#${o.numero_ordem}</td><td>${esc(o.nome_cliente)}</td><td>${c ? esc(c.nome) : '—'}</td><td>${fData(p.data_pagamento)} · ${esc(p.forma_pagamento || '')}</td><td>${fBRL(p.valor_pago)}</td></tr>`;
+  }).join('')}</tbody></table>` : '<div class="vazio">Nenhum pagamento registrado.</div>';
 
-async function carregarHistoricoPagamentos() {
-  const tb = document.getElementById('tbody-historico-pag');
-  tb.innerHTML = `<tr class="loading-row"><td colspan="6">Carregando...</td></tr>`;
+  document.getElementById('l-costureiras').innerHTML = COSTUREIRAS.length ? COSTUREIRAS.map((c) => `<div class="card"><div class="info"><b>${esc(c.nome)}</b>
+    <div>${esc(c.telefone || '')}${c.chave_pix ? ' · PIX ' + esc(c.chave_pix) : ''}${c.ativo ? '' : ' · inativa'}</div></div>
+    <div class="acoes"><button class="btn sm lnk" onclick="abrirCostureira('${c.id}')">Editar</button>
+    <button class="btn sm lnk" onclick="ativarCostureira('${c.id}',${!c.ativo})">${c.ativo ? 'Desativar' : 'Ativar'}</button></div></div>`).join('') : '<div class="vazio">Nenhuma costureira cadastrada.</div>';
+}
+function pagar(ids) {
+  pagarIds = ids.split(',');
+  const total = pagarIds.reduce((s, id) => s + Number(ORDENS.find((o) => o.id === id).valor), 0);
+  document.getElementById('mp-resumo').textContent = `${pagarIds.length} conserto(s) · total ${fBRL(total)}`;
+  document.getElementById('mp-data').value = hoje();
+  abrir('m-pag');
+}
+async function confirmarPagamento() {
+  const data = document.getElementById('mp-data').value, forma = document.getElementById('mp-forma').value;
   try {
-    // Buscar pagamentos e ordens separadamente para evitar problemas de FK naming
-    const pags = await sb('consertos_pagamentos?select=*&order=created_at.desc&limit=100');
-    if (!pags.length) {
-      tb.innerHTML = `<tr class="loading-row"><td colspan="6">Nenhum pagamento registrado ainda.</td></tr>`;
-      return;
+    for (const id of pagarIds) {
+      const o = ORDENS.find((x) => x.id === id);
+      await sb('consertos_pagamentos', { method: 'POST', body: JSON.stringify({ ordem_id: id, valor_pago: o.valor, data_pagamento: data, forma_pagamento: forma }) });
+      await atualizar(id, { status: 'paga' });
     }
-    // Buscar dados das ordens referenciadas
-    const ids = [...new Set(pags.map(p => p.ordem_id))];
-    const ordens = await sb(`consertos_ordens?select=id,nome_cliente,tipo_conserto&id=in.(${ids.join(',')})`);
-    const ordensMap = {};
-    ordens.forEach(o => ordensMap[o.id] = o);
-
-    tb.innerHTML = pags.map((p, i) => {
-      const o = ordensMap[p.ordem_id] || {};
-      return `<tr>
-        <td style="color:var(--text3);font-size:12px">${i+1}</td>
-        <td><strong>${o.nome_cliente || '—'}</strong></td>
-        <td>${o.tipo_conserto || '—'}</td>
-        <td>${fmtData(p.data_pagamento)}</td>
-        <td><span class="badge badge-paga">${fmtForma(p.forma_pagamento)}</span></td>
-        <td style="font-family:'DM Serif Display',serif; color:var(--accent)">${fmtMoeda(p.valor_pago)}</td>
-      </tr>`;
-    }).join('');
-  } catch(e) {
-    tb.innerHTML = `<tr class="loading-row"><td colspan="6">Erro ao carregar histórico.</td></tr>`;
-    console.error(e);
-  }
+    toast('Pagamento registrado.'); fechar('m-pag'); await carregar();
+  } catch (e) { toast('Erro: ' + e.message); }
 }
-
-function togglePagItem(id, valor) {
-  const chk = document.getElementById(`chk-${id}`);
-  const item = document.getElementById(`pitem-${id}`);
-  if (event.target.tagName !== 'INPUT') chk.checked = !chk.checked;
-  if (chk.checked) { ordensSelecionadas.add(id); item.classList.add('selected'); }
-  else { ordensSelecionadas.delete(id); item.classList.remove('selected'); }
-  atualizarTotalPag();
+function abrirCostureira(id) {
+  const c = COSTUREIRAS.find((x) => x.id === id) || {};
+  document.getElementById('ct-id').value = c.id || '';
+  document.getElementById('ct-nome').value = c.nome || '';
+  document.getElementById('ct-tel').value = c.telefone || '';
+  document.getElementById('ct-pix').value = c.chave_pix || '';
+  abrir('m-cost');
 }
-
-function atualizarTotalPag() {
-  let total = 0;
-  ordensSelecionadas.forEach(id => {
-    const o = todasOrdens.find(x => x.id === id);
-    if (o) total += Number(o.valor);
-  });
-  document.getElementById('pag-total').textContent = fmtMoeda(total);
-}
-
-async function registrarPagamento() {
-  if (!ordensSelecionadas.size) { toast('Selecione ao menos uma ordem.', 'error'); return; }
-  const data = document.getElementById('pag-data').value;
-  const forma = document.getElementById('pag-forma').value;
-  const obs = document.getElementById('pag-obs').value.trim();
-  if (!data) { toast('Informe a data do pagamento.', 'error'); return; }
+async function salvarCostureira() {
+  const id = document.getElementById('ct-id').value;
+  const dados = { nome: document.getElementById('ct-nome').value.trim(), telefone: document.getElementById('ct-tel').value.trim() || null, chave_pix: document.getElementById('ct-pix').value.trim() || null };
+  if (!dados.nome) { toast('Informe o nome.'); return; }
   try {
-    for (const id of ordensSelecionadas) {
-      const o = todasOrdens.find(x => x.id === id);
-      if (!o) continue;
-      await sb('consertos_pagamentos', { method: 'POST', body: JSON.stringify({
-        ordem_id: id, valor_pago: o.valor, data_pagamento: data, forma_pagamento: forma, observacoes: obs || null
-      })});
-      await sb(`consertos_ordens?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ status: 'paga', updated_at: new Date().toISOString() }) });
-    }
-    toast(`${ordensSelecionadas.size} pagamento(s) registrado(s)!`, 'success');
-    ordensSelecionadas.clear();
-    await carregarOrdens();
-    renderPendentesPagamento();
-    carregarHistoricoPagamentos();
-  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+    if (id) await sb(`consertos_costureiras?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify(dados) });
+    else await sb('consertos_costureiras', { method: 'POST', body: JSON.stringify({ ...dados, ativo: true }) });
+    fechar('m-cost'); await carregar();
+  } catch (e) { toast('Erro: ' + e.message); }
+}
+async function ativarCostureira(id, ativo) {
+  try { await sb(`consertos_costureiras?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ ativo }) }); await carregar(); } catch (e) { toast('Erro: ' + e.message); }
 }
 
-// ═══ RELATORIO ═══
-function mesAtual() {
-  const ini = new Date(); ini.setDate(1);
-  const fim = new Date(ini.getFullYear(), ini.getMonth()+1, 0);
-  document.getElementById('rel-inicio').value = ini.toISOString().split('T')[0];
-  document.getElementById('rel-fim').value = fim.toISOString().split('T')[0];
-  gerarRelatorio();
-}
-
-async function gerarRelatorio() {
-  const ini = document.getElementById('rel-inicio').value;
-  const fim = document.getElementById('rel-fim').value;
-  if (!ini || !fim) { toast('Informe o período.', 'error'); return; }
-  try {
-    const ordens = await sb(`consertos_ordens?select=*&data_entrada=gte.${ini}&data_entrada=lte.${fim}`);
-    const pags = await sb(`consertos_pagamentos?select=*&data_pagamento=gte.${ini}&data_pagamento=lte.${fim}`);
-
-    document.getElementById('rel-total-ordens').textContent = ordens.length;
-    const fat = ordens.reduce((s,o) => s + Number(o.valor), 0);
-    document.getElementById('rel-faturamento').textContent = fmtMoeda(fat);
-    const rec = pags.reduce((s,p) => s + Number(p.valor_pago), 0);
-    document.getElementById('rel-recebido').textContent = fmtMoeda(rec);
-
-    // Por tipo
-    const porTipo = {};
-    ordens.forEach(o => {
-      if (!porTipo[o.tipo_conserto]) porTipo[o.tipo_conserto] = { qtd: 0, val: 0 };
-      porTipo[o.tipo_conserto].qtd++;
-      porTipo[o.tipo_conserto].val += Number(o.valor);
-    });
-    document.getElementById('rel-por-tipo').innerHTML = Object.entries(porTipo)
-      .sort((a,b) => b[1].val - a[1].val)
-      .map(([tipo, d]) => `<tr>
-        <td style="padding:8px 12px">${tipo}</td>
-        <td style="padding:8px 12px; color:var(--text3)">${d.qtd}</td>
-        <td style="padding:8px 12px; font-family:'DM Serif Display',serif; color:var(--accent)">${fmtMoeda(d.val)}</td>
-        <td style="padding:8px 12px; color:var(--text3)">${fmtMoeda(d.val / d.qtd)}</td>
-      </tr>`).join('') || `<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text3)">Sem dados</td></tr>`;
-
-    // Por status
-    const porStatus = {};
-    ordens.forEach(o => {
-      if (!porStatus[o.status]) porStatus[o.status] = { qtd: 0, val: 0 };
-      porStatus[o.status].qtd++;
-      porStatus[o.status].val += Number(o.valor);
-    });
-    document.getElementById('rel-por-status').innerHTML = Object.entries(porStatus)
-      .map(([st, d]) => `<tr>
-        <td style="padding:8px 12px">${badgeStatus(st)}</td>
-        <td style="padding:8px 12px; color:var(--text3)">${d.qtd}</td>
-        <td style="padding:8px 12px; font-family:'DM Serif Display',serif; color:var(--accent)">${fmtMoeda(d.val)}</td>
-      </tr>`).join('') || `<tr><td colspan="3" style="text-align:center;padding:20px;color:var(--text3)">Sem dados</td></tr>`;
-
-    document.getElementById('relatorio-resultado').style.display = 'block';
-  } catch(e) { toast('Erro ao gerar relatório: ' + e.message, 'error'); }
-}
-
-// ═══ UTILS ═══
-function fmtMoeda(v) {
-  return 'R$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-function fmtData(d) {
-  if (!d) return '—';
-  const [y,m,dd] = d.split('-');
-  return `${dd}/${m}/${y}`;
-}
-function fmtForma(f) {
-  const m = { dinheiro: 'Dinheiro', pix: 'PIX', cartao_debito: 'Débito', cartao_credito: 'Crédito', outro: 'Outro' };
-  return m[f] || f;
-}
-function badgeStatus(s) {
-  const l = { aberta: 'Aberta', retornada: 'Retornada', paga: 'Paga', cancelada: 'Cancelada' };
-  return `<span class="badge badge-${s}">${l[s] || s}</span>`;
-}
-function escHtml(s) { return s.replace(/'/g, "\\'"); }
-function abrirModal(id) { document.getElementById(id).classList.add('open'); }
-function fecharModal(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+/* --------------------------- navegação --------------------------- */
+document.querySelector('nav').addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  document.querySelectorAll('nav button').forEach((x) => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.page').forEach((p) => p.classList.toggle('on', p.id === 'p-' + b.dataset.p));
 });
+document.getElementById('busca').addEventListener('input', renderTodos);
+document.getElementById('f-etapa').addEventListener('change', renderTodos);
+document.querySelectorAll('.modal-bg').forEach((m) => m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('on'); }));
+carregar();
 </script>
 </body>
 </html>
